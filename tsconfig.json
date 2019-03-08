@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": [
+      "es5",
+      "dom",
+      "es6",
+      "dom.iterable",
+      "scripthost"
+    ],
+    "sourceMap": true,
+    "noEmitOnError": false,
+    "noEmit": true,
+    "allowJs": false,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "rootDir": "./src",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "inlineSourceMap": false,
+    "strict": false,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "listEmittedFiles": true,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts"
+  ],
+  "compileOnSave": true,
+  "include": [
+    "src"
+  ]
+}

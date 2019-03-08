@@ -3,17 +3,23 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
+    "@types/react": "^16.8.7",
+    "@types/react-dom": "^16.8.2",
+    "@types/react-router-dom": "^4.3.1",
+    "cross-env": "^5.2.0",
     "flow-bin": "^0.93.0",
-    "react-scripts": "2.1.5"
+    "react-scripts": "^2.1.8",
+    "typescript": "^3.1.6"
   },
   "dependencies": {
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env PORT=3001 react-scripts start",
+    "startOriginal": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

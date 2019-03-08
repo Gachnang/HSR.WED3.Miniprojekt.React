@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
-function PrivateRoute({ component, isAuthenticated, user, token, ...rest }) {
+function PrivateRoute({ component, isAuthenticated, user, token, ...rest } : any) {
   if (isAuthenticated) {
     // if the user is authenticated, just render the component
     return (

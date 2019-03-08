@@ -1,6 +1,4 @@
-// @flow
-
-import React from "react";
+import React, {ChangeEvent} from "react";
 import { Redirect } from "react-router-dom";
 
 import { signup } from "../api";
@@ -12,7 +10,7 @@ type State = {
   firstname: string,
   lastname: string,
   password: string,
-  error: ?Error,
+  error?: Error,
   redirectToReferrer: boolean
 };
 
@@ -26,31 +24,32 @@ class Signup extends React.Component<Props, State> {
     redirectToReferrer: false
   };
 
-  handleLoginChanged = (event: Event) => {
+  handleLoginChanged = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ login: event.target.value });
     }
   };
 
-  handleFirstNameChanged = (event: Event) => {
+  handleFirstNameChanged = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ firstname: event.target.value });
     }
   };
 
-  handleLastNameChanged = (event: Event) => {
+  handleLastNameChanged = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ lastname: event.target.value });
     }
   };
 
-  handlePasswordChanged = (event: Event) => {
+  handlePasswordChanged = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ password: event.target.value });
     }
   };
 
-  handleSubmit = (event: Event) => {
+  // @ts-ignore
+  handleSubmit = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     const { login, firstname, lastname, password } = this.state;
     signup(login, firstname, lastname, password)

@@ -1,6 +1,6 @@
 // @flow
 
-import React from "react";
+import React, {ChangeEvent} from "react";
 import { Redirect, Link } from "react-router-dom";
 
 export type Props = {
@@ -8,7 +8,7 @@ export type Props = {
   authenticate: (
     login: string,
     password: string,
-    callback: (error: ?Error) => void
+    callback: (error?: Error) => void
   ) => void,
   /* We need to know what page the user tried to access so we can 
      redirect after logging in */
@@ -19,7 +19,7 @@ export type Props = {
   }
 };
 
-class Login extends React.Component<Props, *> {
+class Login extends React.Component<Props, any> {
   state = {
     login: "",
     password: "",
@@ -27,19 +27,20 @@ class Login extends React.Component<Props, *> {
     redirectToReferrer: false
   };
 
-  handleLoginChanged = (event: Event) => {
+  handleLoginChanged = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ login: event.target.value });
     }
   };
 
-  handlePasswordChanged = (event: Event) => {
+  handlePasswordChanged = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ password: event.target.value });
     }
   };
 
-  handleSubmit = (event: Event) => {
+  // @ts-ignore
+  handleSubmit = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     const { login, password } = this.state;
     this.props.authenticate(login, password, error => {

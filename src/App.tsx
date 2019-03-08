@@ -1,5 +1,3 @@
-// @flow
-
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -16,7 +14,7 @@ import PrivateRoute from "./components/PrivateRoute";
 
 import * as api from "./api";
 
-import type { User } from "./api";
+import { User } from "./api";
 
 // TODO: Move to own files
 const AllTransactions = () => <div />;
@@ -29,8 +27,8 @@ type Props = {};
 
 type State = {
   isAuthenticated: boolean,
-  token: ?string,
-  user: ?User
+  token?: string,
+  user?: User
 };
 
 class App extends React.Component<Props, State> {
@@ -60,7 +58,7 @@ class App extends React.Component<Props, State> {
   authenticate = (
     login: string,
     password: string,
-    callback: (error: ?Error) => void
+    callback: (error?: Error) => void
   ) => {
     api
       .login(login, password)
