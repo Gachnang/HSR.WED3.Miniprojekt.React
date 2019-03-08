@@ -15,7 +15,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import * as api from "./api";
 
 import { User } from "./api";
-
+import {Nav} from "react-bootstrap";
+import Navbar from "react-bootstrap/Navbar";
 // TODO: Move to own files
 const AllTransactions = () => <div />;
 const Dashboard = () => <div />;
@@ -88,24 +89,32 @@ class App extends React.Component<Props, State> {
     const MenuBar = withRouter(({ history, location: { pathname } }) => {
       if (isAuthenticated && user) {
         return (
-          <nav>
-            <span>
-              {user.firstname} {user.lastname} &ndash; {user.accountNr}
-            </span>
-            {/* Links inside the App are created using the react-router's Link component */}
-            <Link to="/">Home</Link>
-            <Link to="/dashboard">Kontoübersicht</Link>
-            <Link to="/transactions">Zahlungen</Link>
-            <a
-              href="/logout"
-              onClick={event => {
-                event.preventDefault();
-                this.signout(() => history.push("/"));
-              }}
-            >
-              Logout {user.firstname} {user.lastname}
-            </a>
-          </nav>
+          <Navbar variant="dark" bg="dark">
+            <Navbar.Brand as={Link} to="/">Bänkli</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse>
+              <Nav className="mr-auto">
+                <Nav.Item as={Link} to="/">Home</Nav.Item>
+                <Nav.Item as={Link} to="/dashboard">Kontoübersicht</Nav.Item>
+                <Nav.Item as={Link} to="/transactions">Zahlungen</Nav.Item>
+              </Nav>
+              {/*
+              <span>
+                {user.firstname} {user.lastname} &ndash; {user.accountNr}
+              </span>
+
+              <Link to="/transactions"></Link>
+              <a
+                href="/logout"
+                onClick={event => {
+                  event.preventDefault();
+                  this.signout(() => history.push("/"));
+                }}
+              >
+                Logout {user.firstname} {user.lastname}
+              </a>*/}
+            </Navbar.Collapse>
+          </Navbar>
         );
       } else {
         return null;
