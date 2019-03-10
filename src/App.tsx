@@ -3,10 +3,10 @@ import {
   BrowserRouter as Router,
   Route,
   Link,
-  withRouter
+  withRouter, Redirect
 } from "react-router-dom";
 
-import Home from "./components/Home";
+import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
@@ -15,11 +15,16 @@ import PrivateRoute from "./components/PrivateRoute";
 import * as api from "./api";
 
 import { User } from "./api";
-import {Nav} from "react-bootstrap";
+import {Button, Nav} from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
+import 'bootstrap/dist/css/bootstrap.css';
+import NavLink from "react-bootstrap/NavLink";
+
 // TODO: Move to own files
 const AllTransactions = () => <div />;
 const Dashboard = () => <div />;
+
+
 
 // The following are type definitions for Flow,
 // an optional type checker for JavaScript. You
@@ -87,16 +92,51 @@ class App extends React.Component<Props, State> {
     const { isAuthenticated, user, token } = this.state;
 
     const MenuBar = withRouter(({ history, location: { pathname } }) => {
-      if (isAuthenticated && user) {
         return (
           <Navbar variant="dark" bg="dark">
-            <Navbar.Brand as={Link} to="/">Bänkli</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Brand as={Link} to="/">Bank of Rapperswil</Navbar.Brand>
+            <Navbar.Toggle/>
             <Navbar.Collapse>
               <Nav className="mr-auto">
-                <Nav.Item as={Link} to="/">Home</Nav.Item>
-                <Nav.Item as={Link} to="/dashboard">Kontoübersicht</Nav.Item>
-                <Nav.Item as={Link} to="/transactions">Zahlungen</Nav.Item>
+                <Nav.Item>
+                  <Nav.Link as={Link} to="/">Home</Nav.Link>
+                </Nav.Item>
+                {(isAuthenticated && user) ? (
+                  <>
+                    <Nav.Item>
+                      <Nav.Link as={Link} to="/dashboard">Kontoübersicht</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link as={Link} to="/transactions">Zahlungen</Nav.Link>
+                    </Nav.Item>
+                  </>
+                ) : (null)
+                }
+              </Nav>
+
+              <Nav className="mr-right">
+              { (isAuthenticated && user) ? (
+                  <>
+                    <Nav.Item>
+                      <Navbar.Text>{user.firstname} {user.lastname} &ndash; {user.accountNr}</Navbar.Text>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Button variant="outline-light" className={"ml-1"} onClick={event => {
+                        event.preventDefault();
+                        this.signout(() => history.push("/"));
+                      }}>LogOut</Button>
+                    </Nav.Item>
+                  </>
+              ) : (
+                <>
+                  <Nav.Item>
+                    <Button variant="outline-light" as={Link} to={"/login"}>Login</Button>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Button variant="outline-light" className={"ml-1"} as={Link} to={"/signup"}>Register</Button>
+                  </Nav.Item>
+                </>
+              )}
               </Nav>
               {/*
               <span>
@@ -116,20 +156,24 @@ class App extends React.Component<Props, State> {
             </Navbar.Collapse>
           </Navbar>
         );
-      } else {
-        return null;
-      }
     });
 
     return (
       <Router>
-        <div>
+        <>
           <MenuBar />
+          <div className="m-2">
           <Route
             exact
             path="/"
+            render={() => <Redirect to="/welcome"/>}
+          />
+          <Route
+            exact
+            path="/welcome"
+
             render={props => (
-              <Home {...props} isAuthenticated={isAuthenticated} />
+              <Welcome {...props} isAuthenticated={isAuthenticated} />
             )}
           />
           <Route
@@ -159,6 +203,7 @@ class App extends React.Component<Props, State> {
             component={AllTransactions}
           />
         </div>
+        </>
       </Router>
     );
   }
