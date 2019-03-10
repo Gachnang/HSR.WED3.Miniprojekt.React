@@ -1,12 +1,18 @@
 import React, {ChangeEvent} from "react";
 import {Link, Redirect} from "react-router-dom";
 
-import { signup } from "../api";
+import { signup, login as doLogin } from "../api";
 import Form from "react-bootstrap/Form";
 import {Button, Col, FormControl, FormGroup, Jumbotron} from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 
-type Props = {};
+type Props = {
+  /* Callback to submit an authentication request to the server */
+  authenticate: (
+    login: string,
+    password: string,
+    callback: (error?: Error) => void
+  ) => void,};
 
 type State = {
   login: string,
@@ -115,13 +121,26 @@ class Signup extends React.Component<Props, State> {
     let valid = this.handleValidation();
 
     if (valid) {
-      const {login, firstname, lastname, password} = this.state;
-      signup(login, firstname, lastname, password)
+      const self = this;
+      signup(self.state.login, self.state.firstname, self.state.lastname, self.state.password)
         .then(result => {
           console.log("Signup result ", result);
-          this.setState({redirectToReferrer: true, error: null});
+          self.props.authenticate(self.state.login, self.state.password, error => {
+            if (error) {
+              self.setState({
+                error: error,
+                validateErrors: Object.assign(self.state.validateErrors, {password: "Logindaten waren nicht korrekt. (whaaat?!?)"})
+              });
+            } else {
+              self.setState({redirectToReferrer: true, error: null});
+            }
+          });
         })
-        .catch(error => this.setState({error}));
+        .catch(error => {
+          let validateErrors = this.state.validateErrors;
+          validateErrors.login = "Registrierung fehlgeschlagen. Username bereits vergeben?";
+          this.setState({error})
+        });
     }
   };
 

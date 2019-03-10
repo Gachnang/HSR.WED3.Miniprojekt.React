@@ -15,10 +15,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import * as api from "./api";
 
 import { User } from "./api";
-import {Button, Nav} from "react-bootstrap";
-import Navbar from "react-bootstrap/Navbar";
+import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
-import NavLink from "react-bootstrap/NavLink";
 
 // TODO: Move to own files
 const AllTransactions = () => <div />;
@@ -92,10 +90,10 @@ class App extends React.Component<Props, State> {
     const { isAuthenticated, user, token } = this.state;
 
     const MenuBar = withRouter(({ history, location: { pathname } }) => {
-        return (
-          <Navbar variant="dark" bg="dark">
+      return (
+          <Navbar variant="dark" bg="dark" collapseOnSelect expand="md">
             <Navbar.Brand as={Link} to="/">Bank of Rapperswil</Navbar.Brand>
-            <Navbar.Toggle/>
+            <Navbar.Toggle label={"Collapse"} aria-controls="navbarContent"/>
             <Navbar.Collapse>
               <Nav className="mr-auto">
                 <Nav.Item>
@@ -114,13 +112,11 @@ class App extends React.Component<Props, State> {
                 }
               </Nav>
 
-              <Nav className="mr-right">
+              <Nav>
               { (isAuthenticated && user) ? (
                   <>
                     <Nav.Item>
                       <Navbar.Text>{user.firstname} {user.lastname} &ndash; {user.accountNr}</Navbar.Text>
-                    </Nav.Item>
-                    <Nav.Item>
                       <Button variant="outline-light" className={"ml-1"} onClick={event => {
                         event.preventDefault();
                         this.signout(() => history.push("/"));
@@ -128,14 +124,11 @@ class App extends React.Component<Props, State> {
                     </Nav.Item>
                   </>
               ) : (
-                <>
+
                   <Nav.Item>
-                    <Button variant="outline-light" as={Link} to={"/login"}>Login</Button>
+                    <Button variant="outline-light" as={Link} to={"/signup"}>Registrieren</Button>
                   </Nav.Item>
-                  <Nav.Item>
-                    <Button variant="outline-light" className={"ml-1"} as={Link} to={"/signup"}>Register</Button>
-                  </Nav.Item>
-                </>
+
               )}
               </Nav>
               {/*
@@ -178,11 +171,18 @@ class App extends React.Component<Props, State> {
           />
           <Route
             path="/login"
-            render={props => (
+            render={props => isAuthenticated ? (
+              <Redirect to="/"/>
+              ) : (
               <Login {...props} authenticate={this.authenticate} />
-            )}
-          />
-          <Route path="/signup" component={Signup} />
+            )} />
+          <Route
+            path="/signup"
+            render={props => isAuthenticated ? (
+              <Redirect to="/"/>
+              ) : (
+              <Signup {...props} authenticate={this.authenticate} />
+              )} />
           {/* 
             This is a comment inside JSX! It's a bit ugly, but works fine.
 
