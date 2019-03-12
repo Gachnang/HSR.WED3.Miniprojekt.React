@@ -9,6 +9,7 @@ import {
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import NewPayment from './components/NewPayment';
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -19,7 +20,7 @@ import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
 
 // TODO: Move to own files
-const AllTransactions = () => <div />;
+const AllTransactions = () => <NewPayment />;
 const Dashboard = () => <div />;
 
 
