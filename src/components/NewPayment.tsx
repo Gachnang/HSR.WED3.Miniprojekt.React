@@ -40,9 +40,7 @@ class NewPayment extends React.Component<any, any> {
                     }
                 });
             } else {
-                // FIXME Token is undefined
-                console.log("Token: " + this.props.token);
-                getAccount(event.target.value, this.props.token)
+                getAccount(event.target.value, sessionStorage.getItem("token"))
                     .then(value => {
                         this.setState({
                             validated: true,
