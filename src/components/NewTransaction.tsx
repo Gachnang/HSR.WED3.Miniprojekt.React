@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Form, FormControl, FormGroup, Jumbotron} from "react-bootstrap";
-import {AccountNr, getAccount} from "../api";
+import {AccountNr, getAccount, transfer} from "../api";
 
 type State =  {
     from: string,
@@ -17,7 +17,7 @@ type State =  {
     validated: boolean
 }
 
-export class NewPayment extends React.Component<any, State> {
+export class NewTransaction extends React.Component<any, State> {
     state = {
         from: "",
         to: {
@@ -77,12 +77,21 @@ export class NewPayment extends React.Component<any, State> {
                 this.setState({
                     validated: true,
                     amount: {
-                        value: parseInt(event.target.value),
+                        value: Number(0),
                         valid: false,
                         feedback: "Bitte Betrag eingeben."
                     }
                 });
-            } else if (Number(event.target.value) > 0.05) {
+            } else if (Number(event.target.value) <= 0.05) {
+                this.setState({
+                    validated: true,
+                    amount: {
+                        value: Number(event.target.value),
+                        valid: false,
+                        feedback: "Bitte Betrag > 0.05 eingeben."
+                    }
+                });
+            } else {
                 this.setState({
                     validated: true,
                     amount: {
@@ -100,6 +109,9 @@ export class NewPayment extends React.Component<any, State> {
     };
 
     handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        transfer(this.state.to.value, this.state.amount.value, this.props.token)
         // TODO Not yet implemented
     };
 
@@ -142,4 +154,4 @@ export class NewPayment extends React.Component<any, State> {
     }
 }
 
-export default NewPayment;
+export default NewTransaction;

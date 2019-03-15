@@ -9,6 +9,7 @@ import {
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import NewTransaction from './components/NewTransaction';
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -178,10 +179,10 @@ class App extends React.Component<Props, State> {
               ) : (
               <Signup {...props} authenticate={this.authenticate} />
               )} />
-          {/* 
+          {/*
             This is a comment inside JSX! It's a bit ugly, but works fine.
 
-            The following are protected routes that are only available for logged-in users. We also pass the user and token so 
+            The following are protected routes that are only available for logged-in users. We also pass the user and token so
             these components can do API calls. PrivateRoute is not part of react-router but our own implementation.
           */}
           <PrivateRoute
