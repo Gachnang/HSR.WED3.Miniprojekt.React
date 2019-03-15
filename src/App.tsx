@@ -9,7 +9,7 @@ import {
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import NewPayment from './components/NewPayment';
+import NewTransaction from './components/NewTransaction';
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -196,7 +196,7 @@ class App extends React.Component<Props, State> {
             isAuthenticated={isAuthenticated}
             token={token}
             user={user}
-            component={NewPayment}
+            component={NewTransaction}
           />
         </div>
         </>
