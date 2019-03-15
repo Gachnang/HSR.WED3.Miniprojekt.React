@@ -19,12 +19,6 @@ import { User } from "./api";
 import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
 
-// TODO: Move to own files
-const AllTransactions = () => <NewPayment />;
-const Dashboard = () => <div />;
-
-
-
 // The following are type definitions for Flow,
 // an optional type checker for JavaScript. You
 // can safely ignore them for now.
@@ -194,14 +188,15 @@ class App extends React.Component<Props, State> {
             path="/dashboard"
             isAuthenticated={isAuthenticated}
             token={token}
-            component={Dashboard}
+            user={user}
+            component={() => <div />}
           />
           <PrivateRoute
             path="/transactions"
             isAuthenticated={isAuthenticated}
             token={token}
             user={user}
-            component={AllTransactions}
+            component={NewPayment}
           />
         </div>
         </>

@@ -1,18 +1,23 @@
 import React from "react";
-
 import {Button, Form, FormControl, FormGroup, Jumbotron} from "react-bootstrap";
+import {AccountNr, getAccount} from "../api";
 
-import {getAccount} from "../api";
-
-type AccountData = {
-    accountNr: string,
-    owner: {
-        firstname: string,
-        lastname: string
-    }
+type State =  {
+    from: string,
+    to: {
+        value: AccountNr,
+        valid: boolean,
+        feedback: string
+    },
+    amount: {
+        value: number,
+        valid: boolean,
+        feedback: string
+    },
+    validated: boolean
 }
 
-class NewPayment extends React.Component<any, any> {
+export class NewPayment extends React.Component<any, State> {
     state = {
         from: "",
         to: {
@@ -40,7 +45,7 @@ class NewPayment extends React.Component<any, any> {
                     }
                 });
             } else {
-                getAccount(event.target.value, sessionStorage.getItem("token"))
+                getAccount(event.target.value, this.props.token)
                     .then(value => {
                         this.setState({
                             validated: true,
@@ -72,7 +77,7 @@ class NewPayment extends React.Component<any, any> {
                 this.setState({
                     validated: true,
                     amount: {
-                        value: event.target.value,
+                        value: parseInt(event.target.value),
                         valid: false,
                         feedback: "Bitte Betrag eingeben."
                     }
