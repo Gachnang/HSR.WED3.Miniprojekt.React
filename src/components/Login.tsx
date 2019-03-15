@@ -4,7 +4,6 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import {Button, Col, FormControl, FormGroup} from "react-bootstrap";
-import {object, string} from "prop-types";
 
 export type Props = {
   /* Callback to submit an authentication request to the server */
@@ -58,16 +57,18 @@ class Login extends React.Component<Props, State> {
   };
 
   handleValidation: (any?) => boolean = (value) => {
-    let newState = Object.assign(this.state, value);
+    let newState: State = {} as State;
+    Object.assign(newState, this.state);
+    Object.assign(newState, value);
     newState.validated = newState.validated || typeof value === "undefined";
 
     let valid: boolean = true;
 
     // validate login
-    if (this.state.login.length === 0) {
+    if (newState.login.length === 0) {
       newState.validateErrors.login = "Benutzername wird benötigt.";
       valid = false;
-    } else if (this.state.login.length < 3) {
+    } else if (newState.login.length < 3) {
       newState.validateErrors.login = "Benutzername muss mindestens 3 Zeichen lang sein.";
       valid = false;
     } else {
@@ -75,10 +76,10 @@ class Login extends React.Component<Props, State> {
     }
 
     // validate password
-    if (this.state.password.length === 0) {
+    if (newState.password.length === 0) {
       newState.validateErrors.password = "Passwort wird benötigt.";
       valid = false;
-    } else if (this.state.password.length < 3) {
+    } else if (newState.password.length < 3) {
       newState.validateErrors.password = "Passwort muss mindestens 3 Zeichen lang sein.";
       valid = false;
     } else {

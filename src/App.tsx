@@ -9,7 +9,6 @@ import {
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import NewPayment from './components/NewPayment';
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -18,6 +17,7 @@ import * as api from "./api";
 import { User } from "./api";
 import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
+import Transaction from "./components/Transaction";
 
 // The following are type definitions for Flow,
 // an optional type checker for JavaScript. You
@@ -196,7 +196,7 @@ class App extends React.Component<Props, State> {
             isAuthenticated={isAuthenticated}
             token={token}
             user={user}
-            component={NewPayment}
+            component={Transaction}
           />
         </div>
         </>
