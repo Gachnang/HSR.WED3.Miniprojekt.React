@@ -1,10 +1,10 @@
-import NewPayment from "./NewPayment";
+import NewTransaction from "./newtransaction/NewTransaction";
 import * as React from "react";
 
 export const Transaction = (props) => (
   <>
       <div>
-          <NewPayment {...props}/>
+          <NewTransaction {...props}/>
       </div>
       <div>
           <p>BLUBB</p>

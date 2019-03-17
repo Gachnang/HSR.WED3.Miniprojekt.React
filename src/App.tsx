@@ -9,7 +9,6 @@ import {
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import NewTransaction from './components/NewTransaction';
 
 import PrivateRoute from "./components/PrivateRoute";
 
