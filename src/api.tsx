@@ -11,6 +11,12 @@ export type User = {
   accountNr: AccountNr
 };
 
+export type Account = {
+  accountNr: AccountNr,
+  amount?: number,
+  owner: { firstname: string, lastname: string, login?: string }
+}
+
 export type TransferResult = {
   from: AccountNr,
   target: AccountNr,
@@ -30,6 +36,17 @@ export type Transaction = {
 /* Use the exported functions to call the API. 
  * If necessary, adapt the backend address below:
  */
+
+export function userToAccount(user: User): Account {
+  return {
+    accountNr: user.accountNr,
+    owner: {
+      login: user.login,
+      firstname: user.firstname,
+      lastname: user.lastname
+    }
+  }
+}
 
 const backend = "http://localhost:3000";
 
@@ -56,17 +73,14 @@ export function signup(
 
 export function getAccountDetails(
   token: string
-): Promise<{ accountNr: string, amount: number, owner: User }> {
+): Promise<Account> {
   return getAuthenticatedJson(`/accounts`, token).then(parseJSON);
 }
 
 export function getAccount(
   accountNr: AccountNr,
   token: string
-): Promise<{
-  accountNr: AccountNr,
-  owner: { firstname: string, lastname: string }
-}> {
+): Promise<Account> {
   return getAuthenticatedJson(`/accounts/${accountNr}`, token).then(parseJSON);
 }
 
@@ -94,7 +108,7 @@ export function getTransactions(
   ).then(parseJSON);
 }
 
-function checkStatus(response) {
+function checkStatus(response): Response {
   if (response.status >= 200 && response.status < 300) {
     return response;
   } else {
@@ -108,7 +122,7 @@ function parseJSON(response) {
   return response.json();
 }
 
-function getAuthenticatedJson(endpoint: string, token: string) {
+function getAuthenticatedJson(endpoint: string, token: string): Promise<Response> {
   return fetch(`${backend}${endpoint}`, {
     method: "GET",
     headers: {
@@ -118,7 +132,7 @@ function getAuthenticatedJson(endpoint: string, token: string) {
   }).then(checkStatus);
 }
 
-function postJson(endpoint: string, params: Object) {
+function postJson(endpoint: string, params: Object): Promise<Response> {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {
@@ -133,7 +147,7 @@ function postAuthenticatedJson(
   endpoint: string,
   token: string,
   params: Object
-) {
+): Promise<Response> {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {

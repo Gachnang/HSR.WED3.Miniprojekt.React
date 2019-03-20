@@ -3,6 +3,7 @@ import {Jumbotron} from "react-bootstrap";
 import {AccountNr, transfer, TransferResult} from "../../api";
 import TransactionForm from "./TransactionForm";
 import SuccessfulTransaction from "./SuccessfulTransaction";
+import AuthStore from "../../store/AuthStore";
 
 type State = {
     successful?: {
@@ -11,13 +12,17 @@ type State = {
     }
 }
 
-export class NewTransaction extends React.Component<any, State> {
+type Props = {
+    authStore: AuthStore
+}
+
+export class NewTransaction extends React.Component<Props, State> {
     state = {
         successful: undefined,
     };
 
     pay = (to: AccountNr, amount: number) => {
-        transfer(to, amount, this.props.token)
+        transfer(to, amount, this.props.authStore.token)
             .then((res: TransferResult) => {
                 this.setState({successful: {to: res.target, balance: res.total}});
             })
@@ -37,7 +42,7 @@ export class NewTransaction extends React.Component<any, State> {
                 {
                     !this.state.successful ? (
                         <TransactionForm
-                            {...this.props as { token, user }}
+                            {...this.props}
                             pay={this.pay}/>
                     ) : (
                         <SuccessfulTransaction

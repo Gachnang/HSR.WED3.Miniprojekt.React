@@ -12,12 +12,11 @@ import Signup from "./components/Signup";
 
 import PrivateRoute from "./components/PrivateRoute";
 
-import * as api from "./api";
-
 import { User } from "./api";
 import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
 import Transaction from "./components/Transaction";
+import {AuthStore} from "./store/AuthStore";
 
 // The following are type definitions for Flow,
 // an optional type checker for JavaScript. You
@@ -31,58 +30,28 @@ type State = {
 };
 
 class App extends React.Component<Props, State> {
+  removeObserverAuth: () => void;
+  authStore: AuthStore;
+
   constructor(props: any) {
     super(props);
-    const token = sessionStorage.getItem("token");
-    const user = sessionStorage.getItem("user");
-    // Initialize the state, the constructor is the
-    // only place where it's ok to directlly assign
-    // a value to this.state. For all other state
-    // changes, use this.setState.
-    if (token && user) {
-      this.state = {
-        isAuthenticated: true,
-        token,
-        user: JSON.parse(user)
-      };
-    } else {
-      this.state = {
-        isAuthenticated: false,
-        token: undefined,
-        user: undefined
-      };
-    }
+
+    this.authStore = new AuthStore();
   }
 
-  authenticate = (
-    login: string,
-    password: string,
-    callback: (error?: Error) => void
-  ) => {
-    api
-      .login(login, password)
-      .then(({ token, owner }) => {
-        this.setState({ isAuthenticated: true, token, user: owner });
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("user", JSON.stringify(owner));
-        callback(null);
-      })
-      .catch(error => callback(error));
-  };
+  componentDidMount(): void {
+    // rerender when login/logout
+    this.removeObserverAuth = this.authStore.addObserver((state) => this.forceUpdate());
+  }
 
-  signout = (callback: () => void) => {
-    this.setState({
-      isAuthenticated: false,
-      token: undefined,
-      user: undefined
-    });
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
-    callback();
-  };
+  componentWillUnmount(): void {
+    this.removeObserverAuth();
+  }
 
   render() {
-    const { isAuthenticated, user, token } = this.state;
+    const { isAuthenticated, account } = this.authStore.getState();
+    const { firstname, lastname } = account && account.owner ? account.owner : {firstname: undefined, lastname: undefined};
+    const accountNr = account ? account.accountNr : undefined;
 
     const MenuBar = withRouter(({ history, location: { pathname } }) => {
       return (
@@ -94,7 +63,7 @@ class App extends React.Component<Props, State> {
                 <Nav.Item>
                   <Nav.Link as={Link} to="/">Home</Nav.Link>
                 </Nav.Item>
-                {(isAuthenticated && user) ? (
+                {(isAuthenticated && account) ? (
                   <>
                     <Nav.Item>
                       <Nav.Link as={Link} to="/dashboard">Kontoübersicht</Nav.Link>
@@ -108,39 +77,22 @@ class App extends React.Component<Props, State> {
               </Nav>
 
               <Nav>
-              { (isAuthenticated && user) ? (
+              { (isAuthenticated && account) ? (
                   <>
                     <Nav.Item>
-                      <Navbar.Text>{user.firstname} {user.lastname} &ndash; {user.accountNr}</Navbar.Text>
+                      <Navbar.Text>{firstname} {lastname} &ndash; {accountNr}</Navbar.Text>
                       <Button variant="outline-light" className={"ml-1"} onClick={event => {
                         event.preventDefault();
-                        this.signout(() => history.push("/"));
+                        this.authStore.signout(() => history.push("/"));
                       }}>LogOut</Button>
                     </Nav.Item>
                   </>
               ) : (
-
                   <Nav.Item>
                     <Button variant="outline-light" as={Link} to={"/signup"}>Registrieren</Button>
                   </Nav.Item>
-
               )}
               </Nav>
-              {/*
-              <span>
-                {user.firstname} {user.lastname} &ndash; {user.accountNr}
-              </span>
-
-              <Link to="/transactions"></Link>
-              <a
-                href="/logout"
-                onClick={event => {
-                  event.preventDefault();
-                  this.signout(() => history.push("/"));
-                }}
-              >
-                Logout {user.firstname} {user.lastname}
-              </a>*/}
             </Navbar.Collapse>
           </Navbar>
         );
@@ -159,7 +111,6 @@ class App extends React.Component<Props, State> {
           <Route
             exact
             path="/welcome"
-
             render={props => (
               <Welcome {...props} isAuthenticated={isAuthenticated} />
             )}
@@ -169,14 +120,14 @@ class App extends React.Component<Props, State> {
             render={props => isAuthenticated ? (
               <Redirect to="/"/>
               ) : (
-              <Login {...props} authenticate={this.authenticate} />
+              <Login {...props} authStore={this.authStore} />
             )} />
           <Route
             path="/signup"
             render={props => isAuthenticated ? (
               <Redirect to="/"/>
               ) : (
-              <Signup {...props} authenticate={this.authenticate} />
+              <Signup {...props} authStore={this.authStore} />
               )} />
           {/*
             This is a comment inside JSX! It's a bit ugly, but works fine.
@@ -187,15 +138,13 @@ class App extends React.Component<Props, State> {
           <PrivateRoute
             path="/dashboard"
             isAuthenticated={isAuthenticated}
-            token={token}
-            user={user}
+            authStore={this.authStore}
             component={() => <div />}
           />
           <PrivateRoute
             path="/transactions"
             isAuthenticated={isAuthenticated}
-            token={token}
-            user={user}
+            authStore={this.authStore}
             component={Transaction}
           />
         </div>

@@ -3,12 +3,12 @@ import * as React from "react";
 
 export const Transaction = (props) => (
   <>
-      <div>
-          <NewTransaction {...props}/>
-      </div>
-      <div>
-          <p>BLUBB</p>
-      </div>
+    <div>
+      <NewTransaction {...props}/>
+    </div>
+    <div>
+      <p>BLUBB</p>
+    </div>
   </>
 );
 

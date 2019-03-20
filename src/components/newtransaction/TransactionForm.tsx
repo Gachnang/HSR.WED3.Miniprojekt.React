@@ -2,10 +2,10 @@ import React from "react";
 import {Button, Form, FormGroup} from "react-bootstrap";
 import {AccountNr, getAccount} from "../../api";
 import InputControl from "./InputControl";
+import AuthStore from "../../store/AuthStore";
 
 export type Props = {
-    token,
-    user,
+    authStore: AuthStore,
     pay: (AccountNr, number) => void
 }
 
@@ -47,7 +47,7 @@ export class TransactionForm extends React.Component<Props, State> {
                 }
             });
         } else {
-            getAccount(target.value, this.props.token)
+            getAccount(target.value, this.props.authStore.token)
                 .then(value => {
                     this.setState({
                         to: {
@@ -112,7 +112,7 @@ export class TransactionForm extends React.Component<Props, State> {
             <Form onSubmit={this.handleSubmit}>
                 <FormGroup>
                     <Form.Label>Von:</Form.Label>
-                    <Form.Control type="text" readOnly={true} value={this.props.user.accountNr}/>
+                    <Form.Control type="text" readOnly={true} value={this.props.authStore.account.accountNr}/>
                 </FormGroup>
 
                 <InputControl label="Zu:"

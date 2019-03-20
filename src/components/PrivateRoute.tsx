@@ -1,14 +1,14 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
-function PrivateRoute({ component, isAuthenticated, user, token, ...rest } : any) {
+function PrivateRoute({ component, isAuthenticated, authStore, ...rest } : any) {
   if (isAuthenticated) {
     // if the user is authenticated, just render the component
     return (
       <Route
         {...rest}
         render={props =>
-          React.createElement(component, { ...props, user, token })
+          React.createElement(component, { ...props, authStore })
         }
       />
     );

@@ -4,14 +4,11 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import {Button, Col, FormControl, FormGroup} from "react-bootstrap";
+import {AuthStore} from "../store/AuthStore";
 
 export type Props = {
   /* Callback to submit an authentication request to the server */
-  authenticate: (
-    login: string,
-    password: string,
-    callback: (error?: Error) => void
-  ) => void,
+  authStore: AuthStore,
   /* We need to know what page the user tried to access so we can 
      redirect after logging in */
   location: {
@@ -27,7 +24,8 @@ type State = {
   error?: any;
   validateErrors: {login: string, password: string},
   redirectToReferrer: boolean,
-  validated: boolean
+  validated: boolean,
+  onLogin: boolean
 }
 
 class Login extends React.Component<Props, State> {
@@ -40,7 +38,8 @@ class Login extends React.Component<Props, State> {
       error: undefined,
       validateErrors: {login: "", password: ""},
       redirectToReferrer: false,
-      validated: false
+      validated: false,
+      onLogin: false
     };
   }
 
@@ -56,7 +55,7 @@ class Login extends React.Component<Props, State> {
     }
   };
 
-  handleValidation: (any?) => boolean = (value) => {
+  handleValidation: (any?) => boolean = (value: Partial<State>) => {
     let newState: State = {} as State;
     Object.assign(newState, this.state);
     Object.assign(newState, value);
@@ -93,15 +92,15 @@ class Login extends React.Component<Props, State> {
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    let valid = this.handleValidation();
+    let valid = this.handleValidation({validated: true, onLogin: true});
 
     if (valid) {
       const {login, password} = this.state;
-      this.props.authenticate(login, password, error => {
+      this.props.authStore.authenticate(login, password, error => {
         if (error) {
-          this.setState({error: error, validateErrors: Object.assign(this.state.validateErrors, {password: "Logindaten waren nicht korrekt. (Oder ein anderer Fehler ist aufgetretten...)"})});
+          this.setState({onLogin: false, error: error, validateErrors: Object.assign(this.state.validateErrors, {password: `Login fehlgeschlagen (${error})`})});
         } else {
-          this.setState({redirectToReferrer: true, error: null});
+          this.setState({onLogin: false, redirectToReferrer: true, error: null});
         }
       });
     }
@@ -129,7 +128,8 @@ class Login extends React.Component<Props, State> {
               <Col sm="9">
                 <Form.Control id="Login" type="text" placeholder="Benutzername" value={this.state.login} onChange={this.handleLoginChanged}
                               isValid={this.state.validated && this.state.validateErrors.login.length === 0}
-                              isInvalid={this.state.validated && this.state.validateErrors.login.length > 0} />
+                              isInvalid={this.state.validated && this.state.validateErrors.login.length > 0}
+                              disabled={this.state.onLogin}/>
                 <Form.Control.Feedback type={this.state.validateErrors.login.length === 0 ? 'valid' : 'invalid'}>{this.state.validateErrors.login}</Form.Control.Feedback>
               </Col>
             </FormGroup>
@@ -140,7 +140,8 @@ class Login extends React.Component<Props, State> {
               <Col sm="9">
                 <Form.Control id="Password" type="password"  placeholder="Passwort" value={this.state.password} onChange={this.handlePasswordChanged}
                               isValid={this.state.validated && this.state.validateErrors.password.length === 0}
-                              isInvalid={this.state.validated && this.state.validateErrors.password.length > 0}/>
+                              isInvalid={this.state.validated && this.state.validateErrors.password.length > 0}
+                              disabled={this.state.onLogin}/>
                 <Form.Control.Feedback type={this.state.validateErrors.password.length === 0 ? 'valid' : 'invalid'}>{this.state.validateErrors.password}</Form.Control.Feedback>
               </Col>
             </FormGroup>
@@ -149,7 +150,7 @@ class Login extends React.Component<Props, State> {
                 <Link to="/signup">Noch keinen Account?</Link>
               </Col>
               <Col sm ="5" className="col-push-1">
-                <Button type="submit" className="float-right" variant="primary">Login</Button>
+                <Button type="submit" className="float-right" variant="primary" disabled={this.state.onLogin}>Login</Button>
               </Col>
             </FormGroup>
           </Form>
