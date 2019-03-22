@@ -1,5 +1,6 @@
 import NewTransaction from "./newtransaction/NewTransaction";
 import * as React from "react";
+import TransactionList from "./TransactionList";
 
 export const Transaction = (props) => (
   <>
@@ -7,7 +8,7 @@ export const Transaction = (props) => (
       <NewTransaction {...props}/>
     </div>
     <div>
-      <p>BLUBB</p>
+      <TransactionList {...props}/>
     </div>
   </>
 );

@@ -1,10 +1,7 @@
 import React, { FormEvent } from "react";
 import { Redirect, Link } from "react-router-dom";
-import Jumbotron from "react-bootstrap/Jumbotron";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import {Button, Col, FormControl, FormGroup} from "react-bootstrap";
-import {AuthStore} from "../store/AuthStore";
+import { Jumbotron, Button, Row, Col, Form,  FormControl, FormGroup } from "react-bootstrap";
+import { AuthStore } from "../store/AuthStore";
 
 export type Props = {
   /* Callback to submit an authentication request to the server */
@@ -103,6 +100,8 @@ class Login extends React.Component<Props, State> {
           this.setState({onLogin: false, redirectToReferrer: true, error: null});
         }
       });
+    } else {
+      this.setState({onLogin: false});
     }
   };
 
@@ -126,7 +125,7 @@ class Login extends React.Component<Props, State> {
                 Benutzername:
               </Form.Label>
               <Col sm="9">
-                <Form.Control id="Login" type="text" placeholder="Benutzername" value={this.state.login} onChange={this.handleLoginChanged}
+                <Form.Control type="text" placeholder="Benutzername" value={this.state.login} onChange={this.handleLoginChanged}
                               isValid={this.state.validated && this.state.validateErrors.login.length === 0}
                               isInvalid={this.state.validated && this.state.validateErrors.login.length > 0}
                               disabled={this.state.onLogin}/>
@@ -138,7 +137,7 @@ class Login extends React.Component<Props, State> {
                 Passwort:
               </Form.Label>
               <Col sm="9">
-                <Form.Control id="Password" type="password"  placeholder="Passwort" value={this.state.password} onChange={this.handlePasswordChanged}
+                <Form.Control type="password"  placeholder="Passwort" value={this.state.password} onChange={this.handlePasswordChanged}
                               isValid={this.state.validated && this.state.validateErrors.password.length === 0}
                               isInvalid={this.state.validated && this.state.validateErrors.password.length > 0}
                               disabled={this.state.onLogin}/>
@@ -150,7 +149,10 @@ class Login extends React.Component<Props, State> {
                 <Link to="/signup">Noch keinen Account?</Link>
               </Col>
               <Col sm ="5" className="col-push-1">
-                <Button type="submit" className="float-right" variant="primary" disabled={this.state.onLogin}>Login</Button>
+                <Button type="submit" className="float-right" variant="primary" disabled={this.state.onLogin}>
+                  <span hidden={!this.state.onLogin} className="spinner-border spinner-border-sm" role="status" aria-hidden="true">&nbsp;</span>
+                  Login
+                </Button>
               </Col>
             </FormGroup>
           </Form>
