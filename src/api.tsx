@@ -11,10 +11,11 @@ export type User = {
   accountNr: AccountNr
 };
 
+// Two account numbers, because it comes in this way from server!!!
 export type Account = {
   accountNr: AccountNr,
   amount?: number,
-  owner: { firstname: string, lastname: string, login?: string }
+  owner: { accountNr: AccountNr, firstname: string, lastname: string, login?: string }
 }
 
 export type TransferResult = {
@@ -41,6 +42,7 @@ export function userToAccount(user: User): Account {
   return {
     accountNr: user.accountNr,
     owner: {
+      accountNr: user.accountNr,
       login: user.login,
       firstname: user.firstname,
       lastname: user.lastname
@@ -101,7 +103,7 @@ export function getTransactions(
   toDate: string = "",
   count: number = 3,
   skip: number = 0
-): Promise<{ result: Array<Transaction>, query: { resultcount: number } }> {
+): Promise<{ result: Transaction[], query: { resultcount: number } }> {
   return getAuthenticatedJson(
     `/accounts/transactions?fromDate=${fromDate}&toDate=${toDate}&count=${count}&skip=${skip}`,
     token

@@ -1,11 +1,14 @@
 import React, { FormEvent } from "react";
 import { Redirect, Link } from "react-router-dom";
 import { Jumbotron, Button, Row, Col, Form,  FormControl, FormGroup } from "react-bootstrap";
-import { AuthStore } from "../store/AuthStore";
+import PropTypes from 'prop-types';
+import {LogIn} from "../actions/Auth";
+import { connect } from "react-redux";
+import {State as AuthState} from "../reducers/Auth";
+import {Dispatch} from "redux";
 
-export type Props = {
-  /* Callback to submit an authentication request to the server */
-  authStore: AuthStore,
+export type Props = AuthState & {
+  dispatch: Dispatch,
   /* We need to know what page the user tried to access so we can 
      redirect after logging in */
   location: {
@@ -18,25 +21,25 @@ export type Props = {
 type State = {
   login: string;
   password: string;
-  error?: any;
   validateErrors: {login: string, password: string},
   redirectToReferrer: boolean,
-  validated: boolean,
-  onLogin: boolean
+  validated: boolean
 }
 
 class Login extends React.Component<Props, State> {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired
+  };
+
   constructor(props: Props, ...args) {
     super(props, ...args);
 
     this.state = {
       login: "",
       password: "",
-      error: undefined,
       validateErrors: {login: "", password: ""},
       redirectToReferrer: false,
-      validated: false,
-      onLogin: false
+      validated: false
     };
   }
 
@@ -92,16 +95,8 @@ class Login extends React.Component<Props, State> {
     let valid = this.handleValidation({validated: true, onLogin: true});
 
     if (valid) {
-      const {login, password} = this.state;
-      this.props.authStore.authenticate(login, password, error => {
-        if (error) {
-          this.setState({onLogin: false, error: error, validateErrors: Object.assign(this.state.validateErrors, {password: `Login fehlgeschlagen (${error})`})});
-        } else {
-          this.setState({onLogin: false, redirectToReferrer: true, error: null});
-        }
-      });
-    } else {
-      this.setState({onLogin: false});
+      // @ts-ignore
+      this.props.dispatch(LogIn(this.state.login, this.state.password));
     }
   };
 
@@ -109,13 +104,11 @@ class Login extends React.Component<Props, State> {
     const { from } = this.props.location.state || {
       from: { pathname: "/dashboard" }
     };
-    const { redirectToReferrer } = this.state;
 
-    if (redirectToReferrer) {
+    if (this.props.isAuthenticated) {
       return <Redirect to={from} />;
     }
 
-    // @ts-ignore
     return (
         <Jumbotron className={"container col-xs-6"}>
           <h2>Login</h2>
@@ -128,7 +121,7 @@ class Login extends React.Component<Props, State> {
                 <Form.Control type="text" placeholder="Benutzername" value={this.state.login} onChange={this.handleLoginChanged}
                               isValid={this.state.validated && this.state.validateErrors.login.length === 0}
                               isInvalid={this.state.validated && this.state.validateErrors.login.length > 0}
-                              disabled={this.state.onLogin}/>
+                              disabled={this.props.isLoading}/>
                 <Form.Control.Feedback type={this.state.validateErrors.login.length === 0 ? 'valid' : 'invalid'}>{this.state.validateErrors.login}</Form.Control.Feedback>
               </Col>
             </FormGroup>
@@ -138,10 +131,18 @@ class Login extends React.Component<Props, State> {
               </Form.Label>
               <Col sm="9">
                 <Form.Control type="password"  placeholder="Passwort" value={this.state.password} onChange={this.handlePasswordChanged}
-                              isValid={this.state.validated && this.state.validateErrors.password.length === 0}
-                              isInvalid={this.state.validated && this.state.validateErrors.password.length > 0}
-                              disabled={this.state.onLogin}/>
-                <Form.Control.Feedback type={this.state.validateErrors.password.length === 0 ? 'valid' : 'invalid'}>{this.state.validateErrors.password}</Form.Control.Feedback>
+                              isValid={this.state.validated && this.state.validateErrors.password.length === 0 && !this.props.fetchError}
+                              isInvalid={this.state.validated && (this.state.validateErrors.password.length > 0 || !!this.props.fetchError)}
+                              disabled={this.props.isLoading}/>
+                <Form.Control.Feedback type={this.state.validateErrors.password.length === 0 && !this.props.fetchError ? 'valid' : 'invalid'}>
+                  {
+                    this.state.validateErrors.password ||
+                    ((typeof this.props.fetchError !== "undefined") && (this.props.fetchError !== null) && ("Login Fehlgeschlagen (" + (
+                      //@ts-ignore
+                      this.props.fetchError.message.indexOf("Found") >= 0 ? "Username und Passwort falsch" : this.props.fetchError.message
+                    ) + ")"))
+                  }
+                </Form.Control.Feedback>
               </Col>
             </FormGroup>
             <FormGroup as={Row}>
@@ -149,8 +150,8 @@ class Login extends React.Component<Props, State> {
                 <Link to="/signup">Noch keinen Account?</Link>
               </Col>
               <Col sm ="5" className="col-push-1">
-                <Button type="submit" className="float-right" variant="primary" disabled={this.state.onLogin}>
-                  <span hidden={!this.state.onLogin} className="spinner-border spinner-border-sm" role="status" aria-hidden="true">&nbsp;</span>
+                <Button type="submit" className="float-right" variant="primary" disabled={this.props.isLoading}>
+                  <span hidden={!this.props.isLoading} className="spinner-border spinner-border-sm" role="status" aria-hidden="true">&nbsp;</span>
                   Login
                 </Button>
               </Col>
@@ -161,4 +162,6 @@ class Login extends React.Component<Props, State> {
   }
 }
 
-export default Login;
+export default connect((state:any) => {
+  return state.Auth;
+})(Login);

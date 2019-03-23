@@ -4,11 +4,20 @@ import {Link, Redirect} from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import {Button, Col, FormControl, FormGroup, Jumbotron} from "react-bootstrap";
 import Row from "react-bootstrap/Row";
-import authStore, {AuthStore} from "../store/AuthStore";
+import {State as AuthState} from "../reducers/Auth";
+import {LogIn, Register} from "../actions/Auth";
+import PropTypes from "prop-types";
+import {connect} from "react-redux";
 
-type Props = {
-  /* Callback to submit an authentication request to the server */
-  authStore: AuthStore
+export type Props = AuthState & {
+  dispatch: (action: any) => void,
+  /* We need to know what page the user tried to access so we can
+     redirect after logging in */
+  location: {
+    state?: {
+      from: string
+    }
+  }
 };
 
 type State = {
@@ -17,12 +26,15 @@ type State = {
   lastname: string,
   password: string,
   validateErrors: {login: string, firstname: string, lastname: string, password: string},
-  error?: Error,
   redirectToReferrer: boolean,
   validated: boolean
 };
 
-class Signup extends React.Component<Props, State> {
+class Signup extends React.Component<Partial<Props>, State> {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired
+  };
+
   state = {
     login: "",
     firstname: "",
@@ -117,27 +129,10 @@ class Signup extends React.Component<Props, State> {
 
     let valid = this.handleValidation();
 
+    const {login, firstname, lastname, password} = this.state;
+
     if (valid) {
-      const self = this;
-      this.props.authStore.signup(self.state.login, self.state.firstname, self.state.lastname, self.state.password)
-        .then(result => {
-          console.log("Signup result ", result);
-          self.props.authStore.authenticate(self.state.login, self.state.password, error => {
-            if (error) {
-              self.setState({
-                error: error,
-                validateErrors: Object.assign(self.state.validateErrors, {password: "Logindaten waren nicht korrekt. (whaaat?!?)"})
-              });
-            } else {
-              self.setState({redirectToReferrer: true, error: null});
-            }
-          });
-        })
-        .catch(error => {
-          let validateErrors = this.state.validateErrors;
-          validateErrors.login = "Registrierung fehlgeschlagen. Username bereits vergeben?";
-          this.setState({error})
-        });
+      this.props.dispatch(Register(login, firstname, lastname, password));
     }
   };
 
@@ -240,4 +235,6 @@ class Signup extends React.Component<Props, State> {
   }
 }
 
-export default Signup;
+export default  connect((state:any) => {
+  return state.Auth;
+})(Signup);

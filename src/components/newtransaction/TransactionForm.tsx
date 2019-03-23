@@ -1,11 +1,17 @@
 import React from "react";
 import {Button, Form, FormGroup} from "react-bootstrap";
-import {AccountNr, getAccount} from "../../api";
+import {AccountNr} from "../../api";
 import InputControl from "./InputControl";
-import AuthStore from "../../store/AuthStore";
+import {Dispatch} from "redux";
+import {State as AccountState} from "../../reducers/Account";
+import {State as AuthState} from "../../reducers/Auth";
+import {GetAccount} from "../../actions/Account";
+import {connect} from "react-redux";
 
 export type Props = {
-    authStore: AuthStore,
+    Account: AccountState,
+    Auth: AuthState,
+    dispatch: Dispatch,
     pay: (AccountNr, number) => void
 }
 
@@ -46,8 +52,16 @@ export class TransactionForm extends React.Component<Props, State> {
                     feedback: "Bitte Zielaccount eingeben."
                 }
             });
+        } else if(target.value === this.props.Auth.account.accountNr) {
+            this.setState({
+                to: {
+                    value: target.value,
+                    valid: false,
+                    feedback: "Eigener Account als Zielaccount nicht möglich."
+                }
+            });
         } else {
-            getAccount(target.value, this.props.authStore.token)
+            GetAccount(target.value, this.props.Auth.token, this.props.dispatch, this.props.Account)
                 .then(value => {
                     this.setState({
                         to: {
@@ -112,7 +126,7 @@ export class TransactionForm extends React.Component<Props, State> {
             <Form onSubmit={this.handleSubmit}>
                 <FormGroup>
                     <Form.Label>Von:</Form.Label>
-                    <Form.Control type="text" readOnly={true} value={this.props.authStore.account.accountNr}/>
+                    <Form.Control type="text" readOnly={true} value={this.props.Auth.account.accountNr}/>
                 </FormGroup>
 
                 <InputControl label="Zu:"
@@ -138,4 +152,9 @@ export class TransactionForm extends React.Component<Props, State> {
     }
 }
 
-export default TransactionForm;
+export default connect((state:any) => {
+    return {
+        Account: state.Account,
+        Auth: state.Auth
+    };
+})(TransactionForm);

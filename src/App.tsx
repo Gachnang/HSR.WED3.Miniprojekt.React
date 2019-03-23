@@ -1,10 +1,11 @@
-import React from "react";
+import React, {ReactPropTypes} from "react";
 import {
   BrowserRouter as Router,
   Route,
   Link,
   withRouter, Redirect
 } from "react-router-dom";
+import PropTypes from 'prop-types'
 
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
@@ -16,12 +17,13 @@ import { User } from "./api";
 import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
 import Transaction from "./components/Transaction";
-import {AuthStore} from "./store/AuthStore";
+import {connect} from "react-redux";
+import { State as AuthState } from "./reducers/Auth";
+import {LogOut} from "./actions/Auth";
 
-// The following are type definitions for Flow,
-// an optional type checker for JavaScript. You
-// can safely ignore them for now.
-type Props = {};
+type Props = AuthState & {
+  dispatch: (action: any) => void
+};
 
 type State = {
   isAuthenticated: boolean,
@@ -30,28 +32,20 @@ type State = {
 };
 
 class App extends React.Component<Props, State> {
-  removeObserverAuth: () => void;
-  authStore: AuthStore;
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    account: PropTypes.any
+  };
 
   constructor(props: any) {
     super(props);
-
-    this.authStore = new AuthStore();
-  }
-
-  componentDidMount(): void {
-    // rerender when login/logout
-    this.removeObserverAuth = this.authStore.addObserver((state) => this.forceUpdate());
-  }
-
-  componentWillUnmount(): void {
-    this.removeObserverAuth();
   }
 
   render() {
-    const { isAuthenticated, account } = this.authStore.getState();
+    const { isAuthenticated, account } = this.props;
     const { firstname, lastname } = account && account.owner ? account.owner : {firstname: undefined, lastname: undefined};
-    const accountNr = account ? account.accountNr : undefined;
+    const accountNr = account && account.owner ? account.owner.accountNr : undefined;
 
     const MenuBar = withRouter(({ history, location: { pathname } }) => {
       return (
@@ -83,7 +77,7 @@ class App extends React.Component<Props, State> {
                       <Navbar.Text>{firstname} {lastname} &ndash; {accountNr}</Navbar.Text>
                       <Button variant="outline-light" className={"ml-1"} onClick={event => {
                         event.preventDefault();
-                        this.authStore.signout(() => history.push("/"));
+                        this.props.dispatch(LogOut());
                       }}>LogOut</Button>
                     </Nav.Item>
                   </>
@@ -120,14 +114,14 @@ class App extends React.Component<Props, State> {
             render={props => isAuthenticated ? (
               <Redirect to="/"/>
               ) : (
-              <Login {...props} authStore={this.authStore} />
+              <Login {...props} />
             )} />
           <Route
             path="/signup"
             render={props => isAuthenticated ? (
               <Redirect to="/"/>
               ) : (
-              <Signup {...props} authStore={this.authStore} />
+              <Signup {...props} />
               )} />
           {/*
             This is a comment inside JSX! It's a bit ugly, but works fine.
@@ -138,13 +132,11 @@ class App extends React.Component<Props, State> {
           <PrivateRoute
             path="/dashboard"
             isAuthenticated={isAuthenticated}
-            authStore={this.authStore}
             component={() => <div />}
           />
           <PrivateRoute
             path="/transactions"
             isAuthenticated={isAuthenticated}
-            authStore={this.authStore}
             component={Transaction}
           />
         </div>
@@ -154,4 +146,6 @@ class App extends React.Component<Props, State> {
   }
 }
 
-export default App;
+export default connect((state:any) => {
+  return state.Auth;
+})(App);

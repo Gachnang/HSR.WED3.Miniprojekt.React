@@ -1,8 +1,6 @@
 import React from "react";
-import AuthStore from "../store/AuthStore";
 
 export type Props = {
-  authStore: AuthStore
 }
 
 export type State = {}

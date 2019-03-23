@@ -17,13 +17,14 @@ export enum ActionType {
   RegisterSuccess = "AUTH_Register_Success",
   RegisterFailed  = "AUTH_Register_Failed",
 
-  LogOut = "AUTH_LogOut"
+  LogOut = "AUTH_LogOut",
+
+  FetchAccountRequest = "AUTH_FetchAccount_Request",
+  FetchAccountSuccess = "AUTH_FetchAccount_Success"
 }
 
 export type  Action = { /////////////////////////////////// Login
-  type: ActionType.LoginRequest,
-  user: string,
-  password: string
+  type: ActionType.LoginRequest
 } | {
   type: ActionType.LoginSuccess,
   token: string,
@@ -32,26 +33,27 @@ export type  Action = { /////////////////////////////////// Login
   type: ActionType.LoginFailed,
   fetchError: any
 } | { ///////////////////////////////////////////////////// Register
-  type: ActionType.RegisterRequest,
-  firstname: string,
-  lastname: string,
-  password: string
+  type: ActionType.RegisterRequest
 } | {
   type: ActionType.RegisterSuccess,
-  token: string,
   account: Account
 } | {
   type: ActionType.RegisterFailed,
   fetchError: any
 } | { ///////////////////////////////////////////////////// LogOut
   type: ActionType.LogOut
+} | { ///////////////////////////////////////////////////// Account
+  type: ActionType.FetchAccountRequest
+} | {
+  type: ActionType.FetchAccountSuccess,
+  account: Account
 }
 
 export const Auth = (
   state: State = {
     isAuthenticated: false,
     isLoading: false,
-    fetchError: null
+    fetchError: undefined
   },
   action: Action) => {
 
@@ -60,7 +62,8 @@ export const Auth = (
     case ActionType.LoginRequest:
       return {
         ...state,
-        isLoading: true
+        isLoading: true,
+        fetchError: undefined
       };
     case ActionType.LoginSuccess:
       return {
@@ -87,8 +90,6 @@ export const Auth = (
       return {
         ...state,
         isLoading: false,
-        isAuthenticated: action.token.length && action.token.length > 0,
-        token: action.token,
         account: action.account,
         fetchError: undefined
       };
@@ -107,10 +108,29 @@ export const Auth = (
         token: undefined,
         account: undefined
       };
-    default: return state;
+    /////////////////////////////////////////////////////// FetchAccount
+    case ActionType.FetchAccountRequest:
+      return state;
+    case ActionType.FetchAccountSuccess:
+      return {
+        ...state,
+        account: action.account
+      };
+    /////////////////////////////////////////////////////// default / sessionStore(init)
+    default: {
+      if (state.isAuthenticated) return state;
+
+      const token = sessionStorage.getItem("token");
+      const account = sessionStorage.getItem("account");
+
+      return (token && account) ? {
+          ...state,
+          isAuthenticated: true,
+          token,
+          account: JSON.parse(account)
+        } : state;
+    }
   }
 };
-
-
 
 export default Auth;
