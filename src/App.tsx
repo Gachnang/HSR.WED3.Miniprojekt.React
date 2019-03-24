@@ -19,12 +19,16 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Transaction from "./components/Transaction";
 import {connect} from "react-redux";
 import { State as AuthState } from "./reducers/Auth";
+import { State as TransactionState } from "./reducers/Transaction";
 import {LogOut} from "./actions/Auth";
 import {Dispatch} from "redux";
+import Dashboard from "./components/Dashboard";
+import {FetchTimedTransactions} from "./actions/Transaction";
 
 type Props = {
   dispatch: Dispatch,
-  Auth: AuthState
+  Auth: AuthState,
+  Transaction: TransactionState
 };
 
 type State = {
@@ -36,11 +40,25 @@ type State = {
 class App extends React.Component<Props, State> {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    Auth: PropTypes.any.isRequired
+    Auth: PropTypes.any.isRequired,
+    Transaction: PropTypes.any.isRequired
   };
+  updater: number;
 
   constructor(props: any) {
     super(props);
+  }
+
+  componentDidMount(): void {
+    const self = this;
+    // @ts-ignore
+    this.updater = setInterval(() => {
+      FetchTimedTransactions(self.props);
+    }, 10*1000);
+  }
+
+  componentWillUnmount(): void {
+    clearInterval(this.updater);
   }
 
   render() {
@@ -133,7 +151,7 @@ class App extends React.Component<Props, State> {
           <PrivateRoute
             path="/dashboard"
             isAuthenticated={isAuthenticated}
-            component={() => <div />}
+            component={Dashboard}
           />
           <PrivateRoute
             path="/transactions"
@@ -148,5 +166,8 @@ class App extends React.Component<Props, State> {
 }
 
 export default connect((state:any) => {
-  return {Auth: state.Auth};
+  return {
+    Auth: state.Auth,
+    Transaction: state.Transaction
+  };
 })(App);

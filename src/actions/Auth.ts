@@ -1,10 +1,10 @@
-import {Action, ActionType} from "../reducers/Auth";
+import {Action, ActionType, State as AuthState} from "../reducers/Auth";
 import * as api from "../api";
 import {User, Account} from "../api";
 import {AnyAction, Dispatch} from "redux";
 
 export const Register =
-  (login: string, firstname: string, lastname: string, password: string, props: {dispatch: Dispatch}):
+  (login: string, firstname: string, lastname: string, password: string, props: {Auth: AuthState, dispatch: Dispatch}):
     Promise<{ token: string, owner: User }> => {
 
   props.dispatch({
@@ -32,12 +32,13 @@ export const Register =
 };
 
 export const FetchAccount =
-  (token: string, props: {dispatch: Dispatch}):
+  (props: {Auth: AuthState, dispatch: Dispatch}, token: string = null):
   Promise<Account> => {
 
   props.dispatch({
     type: ActionType.FetchAccountRequest
   });
+  token = token !== null ? token : props.Auth.token;
 
   return api.getAccountDetails(token).then((account: api.Account) => {
     sessionStorage.setItem("account", JSON.stringify(account));
@@ -56,7 +57,7 @@ export const FetchAccount =
 };
 
 export const LogIn =
-  (login: string, password: string, props: {dispatch: Dispatch}):
+  (login: string, password: string, props: {Auth: AuthState, dispatch: Dispatch}):
   Promise<{ token: string, owner: User }> => {
 
   props.dispatch({
@@ -76,7 +77,7 @@ export const LogIn =
         account: account
       });
 
-      FetchAccount(value.token, props);
+      FetchAccount(props, value.token);
 
       return value;
     })

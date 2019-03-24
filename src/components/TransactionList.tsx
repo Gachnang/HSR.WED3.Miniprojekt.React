@@ -5,17 +5,18 @@ import TransactionTable from "./transactionlist/TransactionTable";
 import {Transaction} from "../api";
 import {connect} from "react-redux";
 import {State as AuthState} from "../reducers/Auth";
+import {State as TransactionState} from "../reducers/Transaction";
 import {Dispatch} from "redux";
 import {FetchTransactions} from "../actions/Transaction";
 
 export type Props = {
   showFilter: boolean,
   Auth: AuthState,
+  Transaction: TransactionState,
   dispatch: Dispatch
 }
 
 export type State = {
-  allTransactions: Transaction[]
   year: number,
   month: number
 }
@@ -26,7 +27,6 @@ export class TransactionList extends React.Component<Props, State> {
     const date = new Date();
 
     this.state = {
-      allTransactions: [],
       year: date.getFullYear(),
       month: date.getMonth()
     };
@@ -39,28 +39,39 @@ export class TransactionList extends React.Component<Props, State> {
     // The month will wrap around (13 is January)
     let toDate = new Date(this.state.year, this.state.month + 1, 1).toISOString();
 
-    return FetchTransactions(this.props.Auth.token, this.props.dispatch, null, fromDate, toDate, null, null);
+    return FetchTransactions(this.props, fromDate, toDate);
   };
 
   loadRecentTransactions = () => {
-    return FetchTransactions(this.props.Auth.token, this.props.dispatch, null, '', '', 3, null);
+    return FetchTransactions(this.props, '', '', 3);
   };
 
   // TODO Reload transactions
   loadTransactions = () => {
-    (this.props.showFilter ? this.loadFilteredTransactions() : this.loadRecentTransactions())
-      .then((res) => {
-        this.setState({allTransactions: res.result});
-      })
-      .catch((err) => console.error(err.toString()));
+    (this.props.showFilter ? this.loadFilteredTransactions() : this.loadRecentTransactions());
+  };
+
+  getTransactions: () => Transaction[] = () => {
+    const
+      fromDate = new Date(this.state.year, this.state.month),
+      toDate = new Date(this.state.year, this.state.month + 1);
+
+    return this.props.showFilter ?
+      this.props.Transaction.transactions.filter(t => {
+        const transactionDate = new Date(t.date);
+        return transactionDate >= fromDate && transactionDate < toDate;
+      }) :
+      this.props.Transaction.transactions.slice(
+        this.props.Transaction.transactions.length - 3,
+        this.props.Transaction.transactions.length);
   };
 
   onYearChange = (y: number) => {
-    this.setState({year: y}, this.loadTransactions);
+    this.setState({year: y});
   };
 
   onMonthChange = (m: number) => {
-    this.setState({month: m}, this.loadTransactions);
+    this.setState({month: m});
   };
 
   render(): React.ReactNode {
@@ -72,7 +83,7 @@ export class TransactionList extends React.Component<Props, State> {
             onMonthChange={this.onMonthChange}/>}
         <TransactionTable
           includeDate={this.props.showFilter}
-          data={this.state.allTransactions}/>
+          data={this.getTransactions()}/>
       </Jumbotron>
     );
   }
@@ -80,6 +91,7 @@ export class TransactionList extends React.Component<Props, State> {
 
 export default connect((state: any) => {
   return {
-    Auth: state.Auth
+    Auth: state.Auth,
+    Transaction: state.Transaction
   };
 })(TransactionList);

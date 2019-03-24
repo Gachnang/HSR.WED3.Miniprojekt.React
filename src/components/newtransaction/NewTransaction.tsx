@@ -31,7 +31,7 @@ export class NewTransaction extends React.Component<Props, State> {
 
     pay = (to: AccountNr, amount: number) => {
 
-        Transfer(to, amount, this.props.Auth.token, this.props.dispatch)
+        Transfer(to, amount, this.props)
             .then((res: TransferResult) => {
                 this.setState({successful: {to: res.target, balance: res.total}});
             })

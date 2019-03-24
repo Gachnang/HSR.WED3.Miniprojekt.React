@@ -9,6 +9,7 @@ import {Dispatch} from "redux";
 
 export type Props = AuthState & {
   dispatch: Dispatch,
+  Auth: AuthState,
   /* We need to know what page the user tried to access so we can 
      redirect after logging in */
   location: {
@@ -28,7 +29,8 @@ type State = {
 
 class Login extends React.Component<Props, State> {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    Auth: PropTypes.any.isRequired
   };
 
   constructor(props: Props, ...args) {
@@ -162,5 +164,5 @@ class Login extends React.Component<Props, State> {
 }
 
 export default connect((state:any) => {
-  return state.Auth;
+  return { Auth: state.Auth};
 })(Login);

@@ -12,7 +12,9 @@ export type State = {
 
 export enum ActionType {
   TransactionListRequest = "TRANS_List_Request",
+  TransactionListTimedRequest = "TRANS_List_TimedRequest",
   TransactionListSuccess = "TRANS_List_Success",
+  TransactionListTimedSuccess = "TRANS_List_TimedSuccess",
   TransactionListFailed  = "TRANS_List_Failed",
   TransactionListClear  = "TRANS_List_Clear",
 
@@ -24,7 +26,12 @@ export enum ActionType {
 export type  Action = { /////////////////////////////////// List
   type: ActionType.TransactionListRequest
 } | {
+  type: ActionType.TransactionListTimedRequest
+} | {
   type: ActionType.TransactionListSuccess,
+  transactions: TransactionType[]
+} | {
+  type: ActionType.TransactionListTimedSuccess,
   transactions: TransactionType[]
 } | {
   type: ActionType.TransactionListFailed,
@@ -41,10 +48,29 @@ export type  Action = { /////////////////////////////////// List
   fetchError: any
 }
 
-const ConcatList: (target: TransactionType[], source: TransactionType[]) => TransactionType[] = (target, source) => {
-  return target
-    .concat(source)
-    .filter((value: TransactionType, index: number, self: TransactionType[]) => self.indexOf(value) === index)
+const ConcatList: (target: TransactionType[], sources: TransactionType[]) => TransactionType[] = (target, sources) => {
+  while (sources.length > 0) {
+    const source = sources.shift();
+    if (target.filter(t =>
+      t.date === source.date &&
+      t.amount === source.amount &&
+      t.from === source.from &&
+      t.target === source.target &&
+      t.total === source.total
+    ).length === 0) {
+      target.push(source);
+    }
+  }
+  return target;
+};
+
+const SortList = (target: TransactionType[]) => {
+  return target.sort((a,b) => {
+    const
+      dateA = new Date(a.date),
+      dateB = new Date(b.date);
+    return dateA.valueOf() - dateB.valueOf();
+  })
 };
 
 const MaxList = function(target: TransactionType[]) {
@@ -70,7 +96,7 @@ export const Transaction = (
         isLoadingList: true
       };
     case ActionType.TransactionListSuccess:
-      const transactions = ConcatList(state.transactions, action.transactions);
+      const transactions = SortList(ConcatList(state.transactions, action.transactions));
       return {
         ...state,
         isLoadingList: false,
@@ -101,7 +127,7 @@ export const Transaction = (
         ...state,
         isLoadingNew: false,
         lastTransaction: action.transaction,
-        transactions: ConcatList(state.transactions, [action.transaction])
+        transactions: SortList(ConcatList(state.transactions, [action.transaction]))
       };
     case ActionType.NewTransactionFailed:
       return {
@@ -113,6 +139,5 @@ export const Transaction = (
       return state;
   }
 };
-
 
 export default Transaction;
