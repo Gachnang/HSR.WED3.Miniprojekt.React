@@ -8,7 +8,7 @@ export const Transaction = (props) => (
       <NewTransaction {...props}/>
     </div>
     <div>
-      <TransactionList {...props}/>
+      <TransactionList {...props} showFilter={false}/>
     </div>
   </>
 );

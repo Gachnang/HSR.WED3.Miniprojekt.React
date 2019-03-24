@@ -6,7 +6,7 @@ type Props = {
     type: string,
     step?: number,
     placeholder: string,
-    onChange: (HTMLInputElement) => void,
+    onChange: (element: HTMLInputElement) => void,
     isValid: boolean,
     feedback: string
 }
