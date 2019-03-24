@@ -1,5 +1,4 @@
 import React from "react";
-import {Jumbotron} from "react-bootstrap";
 import TransactionFilter from "./transactionlist/TransactionFilter";
 import TransactionTable from "./transactionlist/TransactionTable";
 import {Transaction} from "../api";
@@ -7,6 +6,7 @@ import {connect} from "react-redux";
 import {State as AuthState} from "../reducers/Auth";
 import {Dispatch} from "redux";
 import {FetchTransactions} from "../actions/Transaction";
+import TitledCard from "./common/TitledCard";
 
 export type Props = {
   showFilter: boolean,
@@ -63,17 +63,17 @@ export class TransactionList extends React.Component<Props, State> {
     this.setState({month: m}, this.loadTransactions);
   };
 
+  // TODO Button "All transactions"
   render(): React.ReactNode {
     return (
-      <Jumbotron className={"container col-xs-6"}>
-        <h2>Transaktionen</h2>
+      <TitledCard title="Transaktionen">
         {this.props.showFilter && <TransactionFilter
             onYearChange={this.onYearChange}
             onMonthChange={this.onMonthChange}/>}
         <TransactionTable
           includeDate={this.props.showFilter}
           data={this.state.allTransactions}/>
-      </Jumbotron>
+      </TitledCard>
     );
   }
 }

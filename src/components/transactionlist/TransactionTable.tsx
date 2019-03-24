@@ -25,10 +25,10 @@ export function TransactionTable<T>(props: Props) {
       <thead>
       <tr>
         {props.includeDate && <th>Date</th>}
-        <th>Source</th>
-        <th>Target</th>
-        <th>Amount [CHF]</th>
-        <th>Balance [CHF]</th>
+        <th>Quelle</th>
+        <th>Ziel</th>
+        <th>Betrag [CHF]</th>
+        <th>Kontostand [CHF]</th>
       </tr>
       </thead>
       <tbody>
