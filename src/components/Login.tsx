@@ -1,16 +1,17 @@
-import React, { FormEvent } from "react";
-import { Redirect, Link } from "react-router-dom";
-import { Jumbotron, Button, Row, Col, Form,  FormControl, FormGroup } from "react-bootstrap";
+import React, {FormEvent} from "react";
+import {Redirect, Link} from "react-router-dom";
+import {Button, Row, Col, Form, FormControl, FormGroup, Container} from "react-bootstrap";
 import PropTypes from 'prop-types';
 import {LogIn} from "../actions/Auth";
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 import {State as AuthState} from "../reducers/Auth";
 import {Dispatch} from "redux";
+import TitledCard from "./common/TitledCard";
 
 export type Props = AuthState & {
   dispatch: Dispatch,
   Auth: AuthState,
-  /* We need to know what page the user tried to access so we can 
+  /* We need to know what page the user tried to access so we can
      redirect after logging in */
   location: {
     state?: {
@@ -22,7 +23,7 @@ export type Props = AuthState & {
 type State = {
   login: string;
   password: string;
-  validateErrors: {login: string, password: string},
+  validateErrors: { login: string, password: string },
   redirectToReferrer: boolean,
   validated: boolean
 }
@@ -47,13 +48,13 @@ class Login extends React.Component<Props, State> {
 
   handleLoginChanged = (event: React.FormEvent<FormControl>) => {
     if (event.target instanceof HTMLInputElement) {
-      this.handleValidation({ login: event.target.value});
+      this.handleValidation({login: event.target.value});
     }
   };
 
   handlePasswordChanged = (event: FormEvent<FormControl>) => {
     if (event.target instanceof HTMLInputElement) {
-      this.handleValidation({ password: event.target.value});
+      this.handleValidation({password: event.target.value});
     }
   };
 
@@ -102,28 +103,30 @@ class Login extends React.Component<Props, State> {
   };
 
   render() {
-    const { from } = this.props.location.state || {
-      from: { pathname: "/dashboard" }
+    const {from} = this.props.location.state || {
+      from: {pathname: "/dashboard"}
     };
 
     if (this.props.isAuthenticated) {
-      return <Redirect to={from} />;
+      return <Redirect to={from}/>;
     }
 
     return (
-        <Jumbotron className={"container col-xs-6"}>
-          <h2>Login</h2>
+      <Container className="col-xs-6">
+        <TitledCard title="Login">
           <Form onSubmit={e => this.handleSubmit(e)}>
             <FormGroup as={Row} controlId="Login">
               <Form.Label column className={"col-sm-3"}>
                 Benutzername:
               </Form.Label>
               <Col sm="9">
-                <Form.Control type="text" placeholder="Benutzername" value={this.state.login} onChange={this.handleLoginChanged}
+                <Form.Control type="text" placeholder="Benutzername" value={this.state.login}
+                              onChange={this.handleLoginChanged}
                               isValid={this.state.validated && this.state.validateErrors.login.length === 0}
                               isInvalid={this.state.validated && this.state.validateErrors.login.length > 0}
                               disabled={this.props.isLoading}/>
-                <Form.Control.Feedback type={this.state.validateErrors.login.length === 0 ? 'valid' : 'invalid'}>{this.state.validateErrors.login}</Form.Control.Feedback>
+                <Form.Control.Feedback
+                  type={this.state.validateErrors.login.length === 0 ? 'valid' : 'invalid'}>{this.state.validateErrors.login}</Form.Control.Feedback>
               </Col>
             </FormGroup>
             <FormGroup as={Row} controlId="Password">
@@ -131,11 +134,13 @@ class Login extends React.Component<Props, State> {
                 Passwort:
               </Form.Label>
               <Col sm="9">
-                <Form.Control type="password"  placeholder="Passwort" value={this.state.password} onChange={this.handlePasswordChanged}
+                <Form.Control type="password" placeholder="Passwort" value={this.state.password}
+                              onChange={this.handlePasswordChanged}
                               isValid={this.state.validated && this.state.validateErrors.password.length === 0 && !this.props.fetchError}
                               isInvalid={this.state.validated && (this.state.validateErrors.password.length > 0 || !!this.props.fetchError)}
                               disabled={this.props.isLoading}/>
-                <Form.Control.Feedback type={this.state.validateErrors.password.length === 0 && !this.props.fetchError ? 'valid' : 'invalid'}>
+                <Form.Control.Feedback
+                  type={this.state.validateErrors.password.length === 0 && !this.props.fetchError ? 'valid' : 'invalid'}>
                   {
                     this.state.validateErrors.password ||
                     ((typeof this.props.fetchError !== "undefined") && (this.props.fetchError !== null) && ("Login Fehlgeschlagen (" + (
@@ -150,15 +155,17 @@ class Login extends React.Component<Props, State> {
               <Col sm="7" className="align-self-center">
                 <Link to="/signup">Noch keinen Account?</Link>
               </Col>
-              <Col sm ="5" className="col-push-1">
+              <Col sm="5" className="col-push-1">
                 <Button type="submit" className="float-right" variant="primary" disabled={this.props.isLoading}>
-                  <span hidden={!this.props.isLoading} className="spinner-border spinner-border-sm" role="status" aria-hidden="true">&nbsp;</span>
+                  <span hidden={!this.props.isLoading} className="spinner-border spinner-border-sm" role="status"
+                        aria-hidden="true">&nbsp;</span>
                   Login
                 </Button>
               </Col>
             </FormGroup>
           </Form>
-        </Jumbotron>
+        </TitledCard>
+      </Container>
     );
   }
 }

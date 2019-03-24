@@ -1,13 +1,15 @@
 import React from "react";
-import {Jumbotron} from "react-bootstrap";
-import TransactionFilter from "./transactionlist/TransactionFilter";
-import TransactionTable from "./transactionlist/TransactionTable";
-import {Transaction} from "../api";
+import TitledCard from "../common/TitledCard";
+import {Button} from "react-bootstrap";
+import {Link} from "react-router-dom";
+import TransactionFilter from "./TransactionFilter";
+import TransactionTable from "./TransactionTable";
+import {Transaction} from "../../api";
 import {connect} from "react-redux";
-import {State as AuthState} from "../reducers/Auth";
-import {State as TransactionState} from "../reducers/Transaction";
+import {State as AuthState} from "../../reducers/Auth";
+import {State as TransactionState} from "../../reducers/Transaction";
 import {Dispatch} from "redux";
-import {FetchTransactions} from "../actions/Transaction";
+import {FetchTransactions} from "../../actions/Transaction";
 
 export type Props = {
   showFilter: boolean,
@@ -74,17 +76,18 @@ export class TransactionList extends React.Component<Props, State> {
     this.setState({month: m});
   };
 
+  // TODO Button "All transactions"
   render(): React.ReactNode {
     return (
-      <Jumbotron className={"container col-xs-6"}>
-        <h2>Transaktionen</h2>
+      <TitledCard title={this.props.showFilter ? "Alle Transaktionen" : "Letzte Transaktionen"}>
         {this.props.showFilter && <TransactionFilter
-            onYearChange={this.onYearChange}
-            onMonthChange={this.onMonthChange}/>}
+          onYearChange={this.onYearChange}
+          onMonthChange={this.onMonthChange}/>}
         <TransactionTable
           includeDate={this.props.showFilter}
           data={this.getTransactions()}/>
-      </Jumbotron>
+        {!this.props.showFilter && <Button as={Link} to={'/dashboard'}>Alle Transaktionen</Button>}
+      </TitledCard>
     );
   }
 }

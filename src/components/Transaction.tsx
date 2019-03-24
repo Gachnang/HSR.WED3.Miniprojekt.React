@@ -1,16 +1,19 @@
 import NewTransaction from "./newtransaction/NewTransaction";
 import * as React from "react";
-import TransactionList from "./TransactionList";
+import TransactionList from "./transactionlist/TransactionList";
+import {Col, Container, Row} from "react-bootstrap";
 
 export const Transaction = (props) => (
-  <div className="row">
-    <div className="col-md-4">
-      <NewTransaction {...props}/>
-    </div>
-    <div className="col-md-8">
-      <TransactionList {...props} showFilter={false}/>
-    </div>
-  </div>
+  <Container fluid={true}>
+    <Row>
+      <Col lg={4}>
+        <NewTransaction {...props}/>
+      </Col>
+      <Col lg={8}>
+        <TransactionList {...props} showFilter={false}/>
+      </Col>
+    </Row>
+  </Container>
 );
 
 export default Transaction;
