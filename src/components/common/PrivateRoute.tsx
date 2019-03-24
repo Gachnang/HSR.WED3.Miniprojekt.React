@@ -1,14 +1,14 @@
 import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import {Route, Redirect} from "react-router-dom";
 
-function PrivateRoute({ component, isAuthenticated, authStore, ...rest } : any) {
+function PrivateRoute({component, isAuthenticated, authStore, ...rest}: any) {
   if (isAuthenticated) {
     // if the user is authenticated, just render the component
     return (
       <Route
         {...rest}
         render={props =>
-          React.createElement(component, { ...props, authStore })
+          React.createElement(component, {...props, authStore})
         }
       />
     );
@@ -19,7 +19,7 @@ function PrivateRoute({ component, isAuthenticated, authStore, ...rest } : any) 
         {...rest}
         render={props => (
           <Redirect
-            to={{ pathname: "/login", state: { from: props.location } }}
+            to={{pathname: "/login", state: {from: props.location}}}
           />
         )}
       />

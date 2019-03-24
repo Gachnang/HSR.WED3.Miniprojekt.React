@@ -2,7 +2,7 @@ import {AccountNr, getTransactions, Transaction, transfer, TransferResult} from 
 import {Dispatch} from "redux";
 import {Action as TAction, ActionType as TActionType} from "../reducers/Transaction";
 import {Action as AAction, ActionType as AActionType} from "../reducers/Auth";
-import {State} from "../components/TransactionList";
+import {State} from "../components/transactionlist/TransactionList";
 import {FetchAccount} from "./Auth";
 
 export const Transfer = (

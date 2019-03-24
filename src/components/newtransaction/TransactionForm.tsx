@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Form, FormGroup} from "react-bootstrap";
 import {AccountNr} from "../../api";
-import InputControl from "./InputControl";
+import InputControl from "../common/InputControl";
 import {Dispatch} from "redux";
 import {State as AccountState} from "../../reducers/Account";
 import {State as AuthState} from "../../reducers/Auth";

@@ -1,6 +1,6 @@
 import NewTransaction from "./newtransaction/NewTransaction";
 import * as React from "react";
-import TransactionList from "./TransactionList";
+import TransactionList from "./transactionlist/TransactionList";
 import {Col, Container, Row} from "react-bootstrap";
 
 export const Transaction = (props) => (
