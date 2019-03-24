@@ -3,12 +3,12 @@ import {Dispatch} from "redux";
 import {Action, ActionType, State} from "../reducers/Account";
 
 export const GetAccount:
-  ((accountNr: AccountNr, token: string, dispatch: Dispatch, state: State) => Promise<Account>) =
-  (accountNr, token, dispatch, state) => {
+  ((accountNr: AccountNr, token: string, props: {dispatch: Dispatch, Account: State}) => Promise<Account>) =
+  (accountNr, token, props) => {
 
-  if (state.accounts.has(accountNr)) {
+  if (props.Account.accounts.has(accountNr)) {
     return new Promise<Account>((resolve, reject) => {
-      const account = state.accounts.get(accountNr);
+      const account = props.Account.accounts.get(accountNr);
       if (account === null) {
         reject(new Error("Not Found"));
       } else {
@@ -16,14 +16,14 @@ export const GetAccount:
       }
     });
   } else {
-    dispatch({
+    props.dispatch({
       type: ActionType.AccountRequest,
       accountNr: accountNr
     } as Action);
 
     return getAccount(accountNr, token)
       .then(value => {
-        dispatch({
+        props.dispatch({
           type: ActionType.AccountSuccess,
           accountNr: accountNr,
           account: value
@@ -32,7 +32,7 @@ export const GetAccount:
         return value;
       })
       .catch(error => {
-        dispatch({
+        props.dispatch({
           type: ActionType.AccountFailed,
           accountNr: accountNr,
           fetchError: error
@@ -43,8 +43,8 @@ export const GetAccount:
   }
 };
 
-export const ClearAccounts = () => (dispatch: Dispatch<Action>) => {
-  dispatch({
+export const ClearAccounts = (props: {dispatch: Dispatch<Action>}) => {
+  props.dispatch({
     type: ActionType.AccountClear
   } as Action);
 };

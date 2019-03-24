@@ -1,83 +1,100 @@
 import {Action, ActionType} from "../reducers/Auth";
 import * as api from "../api";
-import {User} from "../api";
+import {User, Account} from "../api";
 import {AnyAction, Dispatch} from "redux";
 
-export const Register = (login: string, firstname: string, lastname: string, password: string) => (dispatch: Dispatch) => {
-  dispatch({
+export const Register =
+  (login: string, firstname: string, lastname: string, password: string, props: {dispatch: Dispatch}):
+    Promise<{ token: string, owner: User }> => {
+
+  props.dispatch({
     type: ActionType.RegisterRequest
   });
 
-  api
+  return api
     .signup(login, firstname, lastname, password)
     .then((value: User) => {
-      dispatch({
+      props.dispatch({
         type: ActionType.RegisterSuccess,
         account: api.userToAccount(value)
       });
 
-      // @ts-ignore
-      dispatch(LogIn(login, password));
+      return LogIn(login, password, props);
     })
     .catch(error => {
-      dispatch({
+      props.dispatch({
         type: ActionType.RegisterFailed,
         fetchError: error
       });
+
+      return error;
     })
 };
 
-export const FetchAccount = (token: string) => (dispatch: Dispatch) => {
-  dispatch({
+export const FetchAccount =
+  (token: string, props: {dispatch: Dispatch}):
+  Promise<Account> => {
+
+  props.dispatch({
     type: ActionType.FetchAccountRequest
   });
 
-  api.getAccountDetails(token).then((account: api.Account) => {
+  return api.getAccountDetails(token).then((account: api.Account) => {
     sessionStorage.setItem("account", JSON.stringify(account));
 
-    dispatch({
+    props.dispatch({
       type: ActionType.FetchAccountSuccess,
       account: account
     });
+
+    return account;
   }).catch(error => {
     console.log(`actions\\Auth.FetchAccount failed`, error);
+
+    return error;
   });
 };
 
-export const LogIn = (login: string, password: string) => (dispatch: Dispatch) => {
-  dispatch({
+export const LogIn =
+  (login: string, password: string, props: {dispatch: Dispatch}):
+  Promise<{ token: string, owner: User }> => {
+
+  props.dispatch({
     type: ActionType.LoginRequest
   });
 
-  api
+  return api
     .login(login, password)
     .then((value: {token: string, owner: api.User}) => {
       const account = api.userToAccount(value.owner);
       sessionStorage.setItem("token", value.token);
       sessionStorage.setItem("account", JSON.stringify(account));
 
-      dispatch({
+      props.dispatch({
         type: ActionType.LoginSuccess,
         token: value.token,
         account: account
       });
 
-      //@ts-ignore
-      dispatch(FetchAccount(value.token));
+      FetchAccount(value.token, props);
+
+      return value;
     })
     .catch(error => {
-      dispatch({
+      props.dispatch({
         type: ActionType.LoginFailed,
         fetchError: error
       });
+
+      return error;
     });
 };
 
-export const LogOut = () => (dispatch: Dispatch) => {
+export const LogOut = (props: {dispatch: Dispatch}) => {
   sessionStorage.removeItem("token");
   sessionStorage.removeItem("account");
 
-  dispatch({
+  props.dispatch({
     type: ActionType.LogOut
   });
 };

@@ -61,7 +61,7 @@ export class TransactionForm extends React.Component<Props, State> {
                 }
             });
         } else {
-            GetAccount(target.value, this.props.Auth.token, this.props.dispatch, this.props.Account)
+            GetAccount(target.value, this.props.Auth.token, this.props)
                 .then(value => {
                     this.setState({
                         to: {

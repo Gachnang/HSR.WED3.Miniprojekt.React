@@ -8,9 +8,11 @@ import {State as AuthState} from "../reducers/Auth";
 import {LogIn, Register} from "../actions/Auth";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
+import {Dispatch} from "redux";
 
-export type Props = AuthState & {
-  dispatch: (action: any) => void,
+export type Props = {
+  dispatch: Dispatch,
+  Auth: AuthState,
   /* We need to know what page the user tried to access so we can
      redirect after logging in */
   location: {
@@ -30,9 +32,10 @@ type State = {
   validated: boolean
 };
 
-class Signup extends React.Component<Partial<Props>, State> {
+class Signup extends React.Component<Props, State> {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    Auth: PropTypes.any.isRequired
   };
 
   state = {
@@ -132,7 +135,7 @@ class Signup extends React.Component<Partial<Props>, State> {
     const {login, firstname, lastname, password} = this.state;
 
     if (valid) {
-      this.props.dispatch(Register(login, firstname, lastname, password));
+      Register(login, firstname, lastname, password, this.props);
     }
   };
 
@@ -236,5 +239,5 @@ class Signup extends React.Component<Partial<Props>, State> {
 }
 
 export default  connect((state:any) => {
-  return state.Auth;
+  return {Auth: state.Auth};
 })(Signup);

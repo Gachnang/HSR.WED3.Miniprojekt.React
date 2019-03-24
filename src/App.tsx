@@ -1,4 +1,4 @@
-import React, {ReactPropTypes} from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -20,9 +20,11 @@ import Transaction from "./components/Transaction";
 import {connect} from "react-redux";
 import { State as AuthState } from "./reducers/Auth";
 import {LogOut} from "./actions/Auth";
+import {Dispatch} from "redux";
 
-type Props = AuthState & {
-  dispatch: (action: any) => void
+type Props = {
+  dispatch: Dispatch,
+  Auth: AuthState
 };
 
 type State = {
@@ -34,8 +36,7 @@ type State = {
 class App extends React.Component<Props, State> {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool.isRequired,
-    account: PropTypes.any
+    Auth: PropTypes.any.isRequired
   };
 
   constructor(props: any) {
@@ -43,7 +44,7 @@ class App extends React.Component<Props, State> {
   }
 
   render() {
-    const { isAuthenticated, account } = this.props;
+    const { isAuthenticated, account } = this.props.Auth;
     const { firstname, lastname } = account && account.owner ? account.owner : {firstname: undefined, lastname: undefined};
     const accountNr = account && account.owner ? account.owner.accountNr : undefined;
 
@@ -77,7 +78,7 @@ class App extends React.Component<Props, State> {
                       <Navbar.Text>{firstname} {lastname} &ndash; {accountNr}</Navbar.Text>
                       <Button variant="outline-light" className={"ml-1"} onClick={event => {
                         event.preventDefault();
-                        this.props.dispatch(LogOut());
+                        LogOut(this.props);
                       }}>LogOut</Button>
                     </Nav.Item>
                   </>
@@ -147,5 +148,5 @@ class App extends React.Component<Props, State> {
 }
 
 export default connect((state:any) => {
-  return state.Auth;
+  return {Auth: state.Auth};
 })(App);

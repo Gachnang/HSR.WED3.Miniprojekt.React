@@ -5,12 +5,12 @@ import {Action as AAction, ActionType as AActionType} from "../reducers/Auth";
 import {State} from "../components/TransactionList";
 import {FetchAccount} from "./Auth";
 
-export const Transfer: (
+export const Transfer = (
   target: AccountNr,
   amount: number,
   token: string,
   dispatch: Dispatch
-) => Promise<TransferResult> = (target, amount, token, dispatch) => {
+) : Promise<TransferResult> => {
   dispatch({
     type: TActionType.NewTransactionRequest
   } as TAction);
@@ -36,7 +36,7 @@ export const Transfer: (
     })
 };
 
-export const FetchTransactions: (
+export const FetchTransactions = (
   token: string,
   dispatch: Dispatch,
   state: State,
@@ -44,7 +44,7 @@ export const FetchTransactions: (
   toDate: string,
   count: number,
   skip: number
-) => Promise<{result: Transaction[], query: { resultcount: number }}> = (token,  dispatch, state, fromDate, toDate, count, skip) => {
+) : Promise<{result: Transaction[], query: { resultcount: number }}> => {
   dispatch({
     type: TActionType.TransactionListRequest
   } as TAction);

@@ -95,8 +95,7 @@ class Login extends React.Component<Props, State> {
     let valid = this.handleValidation({validated: true, onLogin: true});
 
     if (valid) {
-      // @ts-ignore
-      this.props.dispatch(LogIn(this.state.login, this.state.password));
+      LogIn(this.state.login, this.state.password, this.props);
     }
   };
 
