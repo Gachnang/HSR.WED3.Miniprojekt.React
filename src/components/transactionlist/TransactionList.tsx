@@ -7,6 +7,8 @@ import {State as AuthState} from "../../reducers/Auth";
 import {Dispatch} from "redux";
 import {FetchTransactions} from "../../actions/Transaction";
 import TitledCard from "../common/TitledCard";
+import {Button} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 export type Props = {
   showFilter: boolean,
@@ -66,13 +68,14 @@ export class TransactionList extends React.Component<Props, State> {
   // TODO Button "All transactions"
   render(): React.ReactNode {
     return (
-      <TitledCard title="Transaktionen">
+      <TitledCard title={this.props.showFilter ? "Alle Transaktionen" : "Letzte Transaktionen"}>
         {this.props.showFilter && <TransactionFilter
             onYearChange={this.onYearChange}
             onMonthChange={this.onMonthChange}/>}
         <TransactionTable
           includeDate={this.props.showFilter}
           data={this.state.allTransactions}/>
+        {!this.props.showFilter && <Button as={Link} to={'/dashboard'}>Alle Transaktionen</Button>}
       </TitledCard>
     );
   }

@@ -21,6 +21,7 @@ import {connect} from "react-redux";
 import { State as AuthState } from "./reducers/Auth";
 import {LogOut} from "./actions/Auth";
 import {Dispatch} from "redux";
+import Dashboard from "./components/Dashboard";
 
 type Props = {
   dispatch: Dispatch,
@@ -133,7 +134,7 @@ class App extends React.Component<Props, State> {
           <PrivateRoute
             path="/dashboard"
             isAuthenticated={isAuthenticated}
-            component={() => <div />}
+            component={Dashboard}
           />
           <PrivateRoute
             path="/transactions"
