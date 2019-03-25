@@ -126,7 +126,9 @@ export class TransactionForm extends React.Component<Props, State> {
       <Form onSubmit={this.handleSubmit}>
         <FormGroup>
           <Form.Label>Von:</Form.Label>
-          <Form.Control type="text" readOnly={true} value={this.props.Auth.account.accountNr}/>
+          <Form.Control type="text"
+                        readOnly={true}
+                        value={this.props.Auth.account.accountNr + " [" + this.props.Auth.account.amount + " CHF]"}/>
         </FormGroup>
 
         <InputControl label="Zu:"

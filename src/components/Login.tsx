@@ -62,7 +62,7 @@ class Login extends React.Component<Props, State> {
     let newState: State = {} as State;
     Object.assign(newState, this.state);
     Object.assign(newState, value);
-    newState.validated = newState.validated || typeof value === "undefined";
+    newState.validated = true;
 
     let valid: boolean = true;
 
@@ -156,7 +156,7 @@ class Login extends React.Component<Props, State> {
                 <Link to="/signup">Noch keinen Account?</Link>
               </Col>
               <Col sm="5" className="col-push-1">
-                <Button type="submit" className="float-right" variant="primary" disabled={this.props.isLoading}>
+                <Button type="submit" className="float-right" variant="primary" disabled={!this.state.validated || this.props.isLoading}>
                   <span hidden={!this.props.isLoading} className="spinner-border spinner-border-sm" role="status"
                         aria-hidden="true">&nbsp;</span>
                   Login

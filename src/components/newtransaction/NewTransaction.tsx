@@ -30,15 +30,14 @@ export class NewTransaction extends React.Component<Props, State> {
   };
 
   pay = (to: AccountNr, amount: number) => {
-
-        Transfer(to, amount, this.props)
-            .then((res: TransferResult) => {
-                this.setState({successful: {to: res.target, balance: res.total}});
-            })
-            .catch(error => {
-                console.error("Failed", error); // TODO Show better message
-            });
-    };
+    Transfer(to, amount, this.props)
+      .then((res: TransferResult) => {
+        this.setState({successful: {to: res.target, balance: res.total}});
+      })
+      .catch(error => {
+        console.error("Transfer failed", error);
+      });
+  };
 
   startOver = () => {
     this.setState({successful: undefined});

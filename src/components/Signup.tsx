@@ -1,11 +1,11 @@
-import React, {ChangeEvent} from "react";
+import React from "react";
 import {Link, Redirect} from "react-router-dom";
 
 import Form from "react-bootstrap/Form";
 import {Button, Col, Container, FormControl, FormGroup} from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import {State as AuthState} from "../reducers/Auth";
-import {LogIn, Register} from "../actions/Auth";
+import {Register} from "../actions/Auth";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {Dispatch} from "redux";
@@ -74,17 +74,19 @@ class Signup extends React.Component<Props, State> {
     }
   };
 
-  handleValidation: (any?) => boolean = (value) => {
-    let newState = Object.assign(this.state, value);
-    newState.validated = newState.validated || typeof value === "undefined";
+  handleValidation: (any?) => boolean = (value: Partial<State>) => {
+    let newState: State = {} as State;
+    Object.assign(newState, this.state);
+    Object.assign(newState, value);
+    newState.validated = true;
 
     let valid: boolean = true;
 
     // validate login
-    if (this.state.login.length === 0) {
+    if (newState.login.length === 0) {
       newState.validateErrors.login = "Benutzername wird benötigt.";
       valid = false;
-    } else if (this.state.login.length < 3) {
+    } else if (newState.login.length < 3) {
       newState.validateErrors.login = "Benutzername muss mindestens 3 Zeichen lang sein.";
       valid = false;
     } else {
@@ -92,10 +94,10 @@ class Signup extends React.Component<Props, State> {
     }
 
     // validate firstname
-    if (this.state.firstname.length === 0) {
+    if (newState.firstname.length === 0) {
       newState.validateErrors.firstname = "Vorname wird benötigt.";
       valid = false;
-    } else if (this.state.firstname.length < 3) {
+    } else if (newState.firstname.length < 3) {
       newState.validateErrors.firstname = "Vorname muss mindestens 3 Zeichen lang sein.";
       valid = false;
     } else {
@@ -103,10 +105,10 @@ class Signup extends React.Component<Props, State> {
     }
 
     // validate lastname
-    if (this.state.lastname.length === 0) {
+    if (newState.lastname.length === 0) {
       newState.validateErrors.lastname = "Nachname wird benötigt.";
       valid = false;
-    } else if (this.state.lastname.length < 3) {
+    } else if (newState.lastname.length < 3) {
       newState.validateErrors.lastname = "Nachname muss mindestens 3 Zeichen lang sein.";
       valid = false;
     } else {
@@ -114,10 +116,10 @@ class Signup extends React.Component<Props, State> {
     }
 
     // validate password
-    if (this.state.password.length === 0) {
+    if (newState.password.length === 0) {
       newState.validateErrors.password = "Passwort wird benötigt.";
       valid = false;
-    } else if (this.state.password.length < 3) {
+    } else if (newState.password.length < 3) {
       newState.validateErrors.password = "Passwort muss mindestens 3 Zeichen lang sein.";
       valid = false;
     } else {
@@ -126,6 +128,14 @@ class Signup extends React.Component<Props, State> {
 
     this.setState(newState);
     return valid;
+  };
+
+  isEverythingValid = () => {
+    return this.state.validated
+      && this.state.validateErrors.firstname.length === 0
+      && this.state.validateErrors.lastname.length === 0
+      && this.state.validateErrors.login.length === 0
+      && this.state.validateErrors.password.length === 0
   };
 
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -169,7 +179,7 @@ class Signup extends React.Component<Props, State> {
                 Vorname:
               </Form.Label>
               <Col sm="9">
-                <Form.Control id="FirstName" type="text" placeholder="FirstName" value={this.state.firstname}
+                <Form.Control id="FirstName" type="text" placeholder="Vorname" value={this.state.firstname}
                               onChange={this.handleFirstNameChanged}
                               isValid={this.state.validated && this.state.validateErrors.firstname.length === 0}
                               isInvalid={this.state.validated && this.state.validateErrors.firstname.length > 0}/>
@@ -208,40 +218,11 @@ class Signup extends React.Component<Props, State> {
                 <Link to="/login">Bereits einen Account?</Link>
               </Col>
               <Col sm="5" className="col-push-1">
-                <Button type="submit" className="float-right" variant="primary">Account eröffnen</Button>
+                <Button type="submit" className="float-right" variant="primary" disabled={!this.isEverythingValid()}>Account
+                  eröffnen</Button>
               </Col>
             </FormGroup>
           </Form>
-          {/*
-      <div>
-        <h1>Bank of Rapperswil</h1>
-        <form>
-          <h2>Registrieren</h2>
-          <input
-            onChange={this.handleLoginChanged}
-            placeholder="Login"
-            value={this.state.login}
-          />
-          <input
-            onChange={this.handleFirstNameChanged}
-            placeholder="Vorname"
-            value={this.state.firstname}
-          />
-          <input
-            onChange={this.handleLastNameChanged}
-            placeholder="Nachname"
-            value={this.state.lastname}
-          />
-          <input
-            onChange={this.handlePasswordChanged}
-            placeholder="Passwort"
-            type="password"
-            value={this.state.password}
-          />
-          <button onClick={this.handleSubmit}>Account eröffnen</button>
-        </form>
-        {error && <p>Es ist ein Fehler aufgetreten!</p>}
-      </div>*/}
         </TitledCard>
       </Container>
     );
