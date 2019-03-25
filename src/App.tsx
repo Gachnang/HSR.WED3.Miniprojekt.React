@@ -51,14 +51,18 @@ class App extends React.Component<Props, State> {
 
   componentDidMount(): void {
     const self = this;
+    /* TimedFetch disabled!
     // @ts-ignore
     this.updater = setInterval(() => {
-      FetchTimedTransactions(self.props);
-    }, 10*1000);
+      if (self.props.Auth.isAuthenticated) {
+        FetchTimedTransactions(self.props);
+      }
+    }, 10*1000);*/
   }
 
   componentWillUnmount(): void {
-    clearInterval(this.updater);
+    /* TimedFetch disabled!
+    clearInterval(this.updater);*/
   }
 
   render() {

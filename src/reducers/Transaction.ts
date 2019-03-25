@@ -24,11 +24,16 @@ export enum ActionType {
 }
 
 export type  Action = { /////////////////////////////////// List
-  type: ActionType.TransactionListRequest
+  type: ActionType.TransactionListRequest,
+  from: string
+  to: string,
 } | {
   type: ActionType.TransactionListTimedRequest
 } | {
   type: ActionType.TransactionListSuccess,
+  from: string,
+  to: string,
+  resultcount: number,
   transactions: TransactionType[]
 } | {
   type: ActionType.TransactionListTimedSuccess,
@@ -96,13 +101,18 @@ export const Transaction = (
         isLoadingList: true
       };
     case ActionType.TransactionListSuccess:
-      const transactions = SortList(ConcatList(state.transactions, action.transactions));
+    case ActionType.TransactionListTimedSuccess:
+      const
+        transactions = SortList(ConcatList(state.transactions, action.transactions)),
+        min = MinList(transactions),
+        max = MaxList(transactions);
+
       return {
         ...state,
         isLoadingList: false,
         transactions: transactions,
-        transactionFrom: MinList(transactions),
-        transactionTo: MaxList(transactions)
+        transactionFrom: Number.isFinite(min) ? min : undefined,
+        transactionTo: Number.isFinite(max) ? max : undefined,
       };
     case ActionType.TransactionListFailed:
       return {

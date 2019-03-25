@@ -69,11 +69,11 @@ export class TransactionList extends React.Component<Props, State> {
   };
 
   onYearChange = (y: number) => {
-    this.setState({year: y});
+    this.setState({year: y}, () => this.loadTransactions());
   };
 
   onMonthChange = (m: number) => {
-    this.setState({month: m});
+    this.setState({month: m}, () => this.loadTransactions());
   };
 
   // TODO Button "All transactions"

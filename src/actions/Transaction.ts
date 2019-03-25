@@ -47,7 +47,9 @@ export const FetchTransactions = (
   skip: number = 0
 ) : Promise<{result: Transaction[], query: { resultcount: number }}> => {
   props.dispatch({
-    type: TActionType.TransactionListRequest
+    type: TActionType.TransactionListRequest,
+    from: fromDate,
+    to: toDate
   } as TAction);
 
   return privateFetchTransaction(props, ActionType.TransactionListSuccess, fromDate, toDate, count, skip);
@@ -55,22 +57,26 @@ export const FetchTransactions = (
 
 export const FetchTimedTransactions = (props: {Auth: AuthState, Transaction: TransactionState, dispatch: Dispatch}) => {
   if (typeof props.Transaction.transactionTo !== 'undefined') {
-    props.dispatch({
-      type: TActionType.TransactionListTimedRequest
-    } as TAction);
+    const
+      toDate = new Date(),
+      fromDate = new Date(props.Transaction.transactionTo);
+    fromDate.setMilliseconds(fromDate.getMilliseconds() + 1);
 
-    const toDate = new Date(props.Transaction.transactionTo);
-    toDate.setMilliseconds(toDate.getMilliseconds() + 1);
+    props.dispatch({
+      type: TActionType.TransactionListTimedRequest,
+      from: fromDate.toISOString(),
+      to: toDate.toISOString()
+    } as TAction);
 
     return privateFetchTransaction(
       props,
       ActionType.TransactionListTimedSuccess,
+      fromDate.toISOString(),
       toDate.toISOString(),
-      new Date().toISOString(),
       Number.MAX_SAFE_INTEGER,
       0)
       .then(value => {
-        if (value.query.resultcount > 0) {
+        if (value && value.query && value.query.resultcount > 0) {
           FetchAccount(props);
         }
         return value;
@@ -91,6 +97,9 @@ const privateFetchTransaction = (
     .then((value: { result: Transaction[], query: { resultcount: number } }) => {
       props.dispatch({
         type: type,
+        from: fromDate,
+        to: toDate,
+        resultcount: value.query.resultcount,
         transactions: value.result
       } as TAction);
       return value;
