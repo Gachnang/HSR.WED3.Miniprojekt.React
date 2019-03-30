@@ -22,8 +22,7 @@ import { State as AuthState } from "./reducers/Auth";
 import { State as TransactionState } from "./reducers/Transaction";
 import {LogOut} from "./actions/Auth";
 import {Dispatch} from "redux";
-import Dashboard from "./components/Dashboard";
-import {FetchTimedTransactions} from "./actions/Transaction";
+import AccountTransactions from "./components/AccountTransactions";
 
 type Props = {
   dispatch: Dispatch,
@@ -155,7 +154,7 @@ class App extends React.Component<Props, State> {
           <PrivateRoute
             path="/dashboard"
             isAuthenticated={isAuthenticated}
-            component={Dashboard}
+            component={AccountTransactions}
           />
           <PrivateRoute
             path="/transactions"
