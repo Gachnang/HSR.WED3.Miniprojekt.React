@@ -48,7 +48,6 @@ export class TransactionList extends React.Component<Props, State> {
     return FetchTransactions(this.props, '', '', 3);
   };
 
-  // TODO Reload transactions
   loadTransactions = () => {
     (this.props.showFilter ? this.loadFilteredTransactions() : this.loadRecentTransactions());
   };
@@ -76,13 +75,12 @@ export class TransactionList extends React.Component<Props, State> {
     this.setState({month: m}, () => this.loadTransactions());
   };
 
-  // TODO Button "All transactions"
   render(): React.ReactNode {
     return (
       <TitledCard title={this.props.showFilter ? "Alle Transaktionen" : "Letzte Transaktionen"}>
         {this.props.showFilter && <TransactionFilter
-          onYearChange={this.onYearChange}
-          onMonthChange={this.onMonthChange}/>}
+            onYearChange={this.onYearChange}
+            onMonthChange={this.onMonthChange}/>}
         <TransactionTable
           includeDate={this.props.showFilter}
           data={this.getTransactions()}/>

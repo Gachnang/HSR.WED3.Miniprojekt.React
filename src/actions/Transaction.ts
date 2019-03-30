@@ -12,8 +12,8 @@ import {FetchAccount} from "./Auth";
 export const Transfer = (
   target: AccountNr,
   amount: number,
-  props: {Auth: AuthState, dispatch: Dispatch}
-) : Promise<TransferResult> => {
+  props: { Auth: AuthState, dispatch: Dispatch }
+): Promise<TransferResult> => {
   props.dispatch({
     type: TActionType.NewTransactionRequest
   } as TAction);
@@ -40,12 +40,12 @@ export const Transfer = (
 };
 
 export const FetchTransactions = (
-  props: {Auth: AuthState, dispatch: Dispatch},
+  props: { Auth: AuthState, dispatch: Dispatch },
   fromDate: string = "",
   toDate: string = "",
   count: number = Number.MAX_SAFE_INTEGER,
   skip: number = 0
-) : Promise<{result: Transaction[], query: { resultcount: number }}> => {
+): Promise<{ result: Transaction[], query: { resultcount: number } }> => {
   props.dispatch({
     type: TActionType.TransactionListRequest,
     from: fromDate,
@@ -55,7 +55,7 @@ export const FetchTransactions = (
   return privateFetchTransaction(props, ActionType.TransactionListSuccess, fromDate, toDate, count, skip);
 };
 
-export const FetchTimedTransactions = (props: {Auth: AuthState, Transaction: TransactionState, dispatch: Dispatch}) => {
+export const FetchTimedTransactions = (props: { Auth: AuthState, Transaction: TransactionState, dispatch: Dispatch }) => {
   if (typeof props.Transaction.transactionTo !== 'undefined') {
     const
       toDate = new Date(),
@@ -86,13 +86,13 @@ export const FetchTimedTransactions = (props: {Auth: AuthState, Transaction: Tra
 };
 
 const privateFetchTransaction = (
-  props: {Auth: AuthState, dispatch: Dispatch},
+  props: { Auth: AuthState, dispatch: Dispatch },
   type: ActionType,
   fromDate: string = "",
   toDate: string = "",
   count: number = Number.MAX_SAFE_INTEGER,
   skip: number = 0
-) : Promise<{result: Transaction[], query: { resultcount: number }}> => {
+): Promise<{ result: Transaction[], query: { resultcount: number } }> => {
   return getTransactions(props.Auth.token, fromDate, toDate, count, skip)
     .then((value: { result: Transaction[], query: { resultcount: number } }) => {
       props.dispatch({

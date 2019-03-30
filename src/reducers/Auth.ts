@@ -11,11 +11,11 @@ export type State = {
 export enum ActionType {
   LoginRequest = "AUTH_LogIn_Request",
   LoginSuccess = "AUTH_LogIn_Success",
-  LoginFailed  = "AUTH_LogIn_Failed",
+  LoginFailed = "AUTH_LogIn_Failed",
 
   RegisterRequest = "AUTH_Register_Request",
   RegisterSuccess = "AUTH_Register_Success",
-  RegisterFailed  = "AUTH_Register_Failed",
+  RegisterFailed = "AUTH_Register_Failed",
 
   LogOut = "AUTH_LogOut",
 
@@ -124,11 +124,11 @@ export const Auth = (
       const account = sessionStorage.getItem("account");
 
       return (token && account) ? {
-          ...state,
-          isAuthenticated: true,
-          token,
-          account: JSON.parse(account)
-        } : state;
+        ...state,
+        isAuthenticated: true,
+        token,
+        account: JSON.parse(account)
+      } : state;
     }
   }
 };

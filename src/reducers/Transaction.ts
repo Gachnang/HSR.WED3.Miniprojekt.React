@@ -15,8 +15,8 @@ export enum ActionType {
   TransactionListTimedRequest = "TRANS_List_TimedRequest",
   TransactionListSuccess = "TRANS_List_Success",
   TransactionListTimedSuccess = "TRANS_List_TimedSuccess",
-  TransactionListFailed  = "TRANS_List_Failed",
-  TransactionListClear  = "TRANS_List_Clear",
+  TransactionListFailed = "TRANS_List_Failed",
+  TransactionListClear = "TRANS_List_Clear",
 
   NewTransactionRequest = "TRANS_New_Request",
   NewTransactionSuccess = "TRANS_New_Success",
@@ -70,7 +70,7 @@ const ConcatList: (target: TransactionType[], sources: TransactionType[]) => Tra
 };
 
 const SortList = (target: TransactionType[]) => {
-  return target.sort((a,b) => {
+  return target.sort((a, b) => {
     const
       dateA = new Date(a.date),
       dateB = new Date(b.date);
@@ -78,11 +78,11 @@ const SortList = (target: TransactionType[]) => {
   })
 };
 
-const MaxList = function(target: TransactionType[]) {
+const MaxList = function (target: TransactionType[]) {
   return Math.max.apply(null, target.map(v => new Date(v.date)));
 };
 
-const MinList = function(target: TransactionType[]) {
+const MinList = function (target: TransactionType[]) {
   return Math.min.apply(null, target.map(v => new Date(v.date)));
 };
 

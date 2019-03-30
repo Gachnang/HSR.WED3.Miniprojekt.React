@@ -1,4 +1,4 @@
-import {Account as AccountType, AccountNr } from "../api";
+import {Account as AccountType, AccountNr} from "../api";
 
 export type State = {
   isLoading: boolean,
@@ -11,8 +11,8 @@ export type State = {
 export enum ActionType {
   AccountRequest = "ACC_Request",
   AccountSuccess = "ACC_Success",
-  AccountFailed  = "ACC_Failed",
-  AccountClear  = "ACC_Clear",
+  AccountFailed = "ACC_Failed",
+  AccountClear = "ACC_Clear",
 }
 
 export type  Action = {

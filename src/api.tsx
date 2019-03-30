@@ -56,7 +56,7 @@ export function login(
   login: string,
   password: string
 ): Promise<{ token: string, owner: User }> {
-  return postJson("/auth/login", { login, password }).then(parseJSON);
+  return postJson("/auth/login", {login, password}).then(parseJSON);
 }
 
 export function signup(

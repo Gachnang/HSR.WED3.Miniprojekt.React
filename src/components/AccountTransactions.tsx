@@ -4,7 +4,7 @@ import {Container} from "react-bootstrap";
 
 export const AccountTransactions = (props) => (
   <Container fluid={true}>
-        <TransactionList {...props} showFilter={true}/>
+    <TransactionList {...props} showFilter={true}/>
   </Container>
 );
 
