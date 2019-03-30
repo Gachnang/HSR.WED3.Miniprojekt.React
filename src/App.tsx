@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 import PropTypes from 'prop-types'
 
+import AccountTransactions from "./components/AccountTransactions";
+import Dashboard from "./components/Dashboard";
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -16,13 +18,11 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import { User } from "./api";
 import {Button, Nav, Navbar} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.css';
-import Transaction from "./components/Transaction";
 import {connect} from "react-redux";
 import { State as AuthState } from "./reducers/Auth";
 import { State as TransactionState } from "./reducers/Transaction";
 import {LogOut} from "./actions/Auth";
 import {Dispatch} from "redux";
-import AccountTransactions from "./components/AccountTransactions";
 
 type Props = {
   dispatch: Dispatch,
@@ -76,20 +76,20 @@ class App extends React.Component<Props, State> {
             <Navbar.Toggle label={"Collapse"} aria-controls="navbarContent"/>
             <Navbar.Collapse>
               <Nav className="mr-auto">
-                <Nav.Item>
-                  <Nav.Link as={Link} to="/">Home</Nav.Link>
-                </Nav.Item>
                 {(isAuthenticated && account) ? (
                   <>
                     <Nav.Item>
-                      <Nav.Link as={Link} to="/dashboard">Kontoübersicht</Nav.Link>
+                      <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                      <Nav.Link as={Link} to="/transactions">Zahlungen</Nav.Link>
+                      <Nav.Link as={Link} to="/transactions">Konto Bewegungen</Nav.Link>
                     </Nav.Item>
                   </>
-                ) : (null)
-                }
+                ) : (
+                  <Nav.Item>
+                    <Nav.Link as={Link} to="/">Home</Nav.Link>
+                  </Nav.Item>
+                )}
               </Nav>
 
               <Nav>
@@ -134,14 +134,14 @@ class App extends React.Component<Props, State> {
           <Route
             path="/login"
             render={props => isAuthenticated ? (
-              <Redirect to="/"/>
+              <Redirect to="/dashboard"/>
               ) : (
               <Login {...props} />
             )} />
           <Route
             path="/signup"
             render={props => isAuthenticated ? (
-              <Redirect to="/"/>
+              <Redirect to="/dashboard"/>
               ) : (
               <Signup {...props} />
               )} />
@@ -154,12 +154,12 @@ class App extends React.Component<Props, State> {
           <PrivateRoute
             path="/dashboard"
             isAuthenticated={isAuthenticated}
-            component={AccountTransactions}
+            component={Dashboard}
           />
           <PrivateRoute
             path="/transactions"
             isAuthenticated={isAuthenticated}
-            component={Transaction}
+            component={AccountTransactions}
           />
         </div>
         </>
