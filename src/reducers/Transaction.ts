@@ -1,4 +1,5 @@
 import {Account, Transaction as TransactionType, TransferResult} from "../api";
+import { ActionType as ActionTypeAuth } from "./Auth";
 
 export type State = {
   isLoadingList: boolean,
@@ -20,10 +21,15 @@ export enum ActionType {
 
   NewTransactionRequest = "TRANS_New_Request",
   NewTransactionSuccess = "TRANS_New_Success",
-  NewTransactionFailed = "TRANS_New_Failed"
+  NewTransactionFailed = "TRANS_New_Failed",
+
+
 }
 
-export type  Action = { /////////////////////////////////// List
+export type  Action = {
+  type: ActionTypeAuth.LogOut
+} | {
+  /////////////////////////////////// List
   type: ActionType.TransactionListRequest,
   from: string
   to: string,
@@ -94,7 +100,15 @@ export const Transaction = (
   },
   action: Action): State => {
 
-  switch (action.type) { ////////////////////////////////// List
+  switch (action.type) {
+    // logout
+    case ActionTypeAuth.LogOut:
+      return {
+        ...state,
+        transactions: [],
+        lastTransaction: undefined
+      };
+    ////////////////////////////////// List
     case ActionType.TransactionListRequest:
       return {
         ...state,
